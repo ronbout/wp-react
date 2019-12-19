@@ -1,4 +1,4 @@
-index.php
+/index.php
 
 /uploads/js_composer
 
@@ -7,5 +7,6 @@ index.php
 /themes/twentyseventeen/
 /themes/twentynineteen/
 
-plugins/akisment/
+/plugins/akisment/
+!/plugins/react-test/
 
