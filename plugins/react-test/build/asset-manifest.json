@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/wp-content/plugins/react-test/build/static/css/main.e0253e45.chunk.css",
+    "main.js": "/wp-content/plugins/react-test/build/static/js/main.a4338e5f.chunk.js",
+    "main.js.map": "/wp-content/plugins/react-test/build/static/js/main.a4338e5f.chunk.js.map",
+    "runtime~main.js": "/wp-content/plugins/react-test/build/static/js/runtime~main.c3443d82.js",
+    "runtime~main.js.map": "/wp-content/plugins/react-test/build/static/js/runtime~main.c3443d82.js.map",
+    "static/js/2.176ef563.chunk.js": "/wp-content/plugins/react-test/build/static/js/2.176ef563.chunk.js",
+    "static/js/2.176ef563.chunk.js.map": "/wp-content/plugins/react-test/build/static/js/2.176ef563.chunk.js.map",
+    "index.html": "/wp-content/plugins/react-test/build/index.html",
+    "precache-manifest.0d73c8ca25bc420dd22ddf5e024004d9.js": "/wp-content/plugins/react-test/build/precache-manifest.0d73c8ca25bc420dd22ddf5e024004d9.js",
+    "service-worker.js": "/wp-content/plugins/react-test/build/service-worker.js",
+    "static/css/main.e0253e45.chunk.css.map": "/wp-content/plugins/react-test/build/static/css/main.e0253e45.chunk.css.map"
+  }
+}
