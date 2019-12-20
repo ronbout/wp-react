@@ -1,15 +1,23 @@
 {
   "files": {
-    "main.css": "/wp-content/plugins/react-test/build/static/css/main.e0253e45.chunk.css",
-    "main.js": "/wp-content/plugins/react-test/build/static/js/main.a4338e5f.chunk.js",
-    "main.js.map": "/wp-content/plugins/react-test/build/static/js/main.a4338e5f.chunk.js.map",
-    "runtime~main.js": "/wp-content/plugins/react-test/build/static/js/runtime~main.c3443d82.js",
-    "runtime~main.js.map": "/wp-content/plugins/react-test/build/static/js/runtime~main.c3443d82.js.map",
-    "static/js/2.176ef563.chunk.js": "/wp-content/plugins/react-test/build/static/js/2.176ef563.chunk.js",
-    "static/js/2.176ef563.chunk.js.map": "/wp-content/plugins/react-test/build/static/js/2.176ef563.chunk.js.map",
+    "main.css": "/wp-content/plugins/react-test/build/static/css/main.9cc763af.chunk.css",
+    "main.js": "/wp-content/plugins/react-test/build/static/js/main.f584ac13.chunk.js",
+    "main.js.map": "/wp-content/plugins/react-test/build/static/js/main.f584ac13.chunk.js.map",
+    "runtime-main.js": "/wp-content/plugins/react-test/build/static/js/runtime-main.7a18ccda.js",
+    "runtime-main.js.map": "/wp-content/plugins/react-test/build/static/js/runtime-main.7a18ccda.js.map",
+    "static/js/2.b88c713c.chunk.js": "/wp-content/plugins/react-test/build/static/js/2.b88c713c.chunk.js",
+    "static/js/2.b88c713c.chunk.js.map": "/wp-content/plugins/react-test/build/static/js/2.b88c713c.chunk.js.map",
     "index.html": "/wp-content/plugins/react-test/build/index.html",
-    "precache-manifest.0d73c8ca25bc420dd22ddf5e024004d9.js": "/wp-content/plugins/react-test/build/precache-manifest.0d73c8ca25bc420dd22ddf5e024004d9.js",
+    "precache-manifest.6151b05340c95bbe40b1aa82062a766c.js": "/wp-content/plugins/react-test/build/precache-manifest.6151b05340c95bbe40b1aa82062a766c.js",
     "service-worker.js": "/wp-content/plugins/react-test/build/service-worker.js",
-    "static/css/main.e0253e45.chunk.css.map": "/wp-content/plugins/react-test/build/static/css/main.e0253e45.chunk.css.map"
-  }
+    "static/css/main.9cc763af.chunk.css.map": "/wp-content/plugins/react-test/build/static/css/main.9cc763af.chunk.css.map",
+    "static/js/2.b88c713c.chunk.js.LICENSE": "/wp-content/plugins/react-test/build/static/js/2.b88c713c.chunk.js.LICENSE",
+    "static/media/styles.css": "/wp-content/plugins/react-test/build/static/media/3sixD-hero.fe30e49e.jpg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.7a18ccda.js",
+    "static/js/2.b88c713c.chunk.js",
+    "static/css/main.9cc763af.chunk.css",
+    "static/js/main.f584ac13.chunk.js"
+  ]
 }

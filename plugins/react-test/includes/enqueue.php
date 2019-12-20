@@ -20,11 +20,13 @@ add_action('init', function () {
 			wp_enqueue_style('tsd-rt', get_site_url() . $asset_manifest['main.css']);
 		}
 
-		wp_enqueue_script('tsd-rt-runtime', get_site_url() . $asset_manifest['runtime~main.js'], array(), null, true);
-
 		wp_enqueue_script('tsd-rt-main', get_site_url() . $asset_manifest['main.js'], array('tsd-rt-runtime'), null, true);
 
 		foreach ($asset_manifest as $key => $value) {
+
+			if (substr($key, 0, 7) === 'runtime' && substr($key, -2, 2) === 'js') {
+				wp_enqueue_script('tsd-rt-runtime', get_site_url() . $value, array(), null, true);
+			}
 			if (preg_match('@static/js/(.*)\.chunk\.js@', $key, $matches)) {
 				if ($matches && is_array($matches) && count($matches) === 2) {
 					$name = "tsd-rt-" . preg_replace('/[^A-Za-z0-9_]/', '-', $matches[1]);
