@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/wp-content/themes/salient-child/react/bio/static/css/main.335d2e0b.chunk.css",
+    "main.js": "/wp-content/themes/salient-child/react/bio/static/js/main.0e173442.chunk.js",
+    "main.js.map": "/wp-content/themes/salient-child/react/bio/static/js/main.0e173442.chunk.js.map",
+    "runtime-main.js": "/wp-content/themes/salient-child/react/bio/static/js/runtime-main.a0e1c4b4.js",
+    "runtime-main.js.map": "/wp-content/themes/salient-child/react/bio/static/js/runtime-main.a0e1c4b4.js.map",
+    "static/js/2.90849c2e.chunk.js": "/wp-content/themes/salient-child/react/bio/static/js/2.90849c2e.chunk.js",
+    "static/js/2.90849c2e.chunk.js.map": "/wp-content/themes/salient-child/react/bio/static/js/2.90849c2e.chunk.js.map",
+    "index.html": "/wp-content/themes/salient-child/react/bio/index.html",
+    "precache-manifest.3901f3de088c160110483faa5ca98c64.js": "/wp-content/themes/salient-child/react/bio/precache-manifest.3901f3de088c160110483faa5ca98c64.js",
+    "service-worker.js": "/wp-content/themes/salient-child/react/bio/service-worker.js",
+    "static/css/main.335d2e0b.chunk.css.map": "/wp-content/themes/salient-child/react/bio/static/css/main.335d2e0b.chunk.css.map",
+    "static/js/2.90849c2e.chunk.js.LICENSE": "/wp-content/themes/salient-child/react/bio/static/js/2.90849c2e.chunk.js.LICENSE",
+    "static/media/styles.css": "/wp-content/themes/salient-child/react/bio/static/media/3sixD-hero.fe30e49e.jpg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.a0e1c4b4.js",
+    "static/js/2.90849c2e.chunk.js",
+    "static/css/main.335d2e0b.chunk.css",
+    "static/js/main.0e173442.chunk.js"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/wp-content/themes/salient-child/react/profile/static/css/main.4a01ebe2.chunk.css",
+    "main.js": "/wp-content/themes/salient-child/react/profile/static/js/main.5938146e.chunk.js",
+    "main.js.map": "/wp-content/themes/salient-child/react/profile/static/js/main.5938146e.chunk.js.map",
+    "runtime-main.js": "/wp-content/themes/salient-child/react/profile/static/js/runtime-main.f14333bd.js",
+    "runtime-main.js.map": "/wp-content/themes/salient-child/react/profile/static/js/runtime-main.f14333bd.js.map",
+    "static/js/2.0dc72124.chunk.js": "/wp-content/themes/salient-child/react/profile/static/js/2.0dc72124.chunk.js",
+    "static/js/2.0dc72124.chunk.js.map": "/wp-content/themes/salient-child/react/profile/static/js/2.0dc72124.chunk.js.map",
+    "index.html": "/wp-content/themes/salient-child/react/profile/index.html",
+    "precache-manifest.c87030ec34e905200dd783ec47cc4f58.js": "/wp-content/themes/salient-child/react/profile/precache-manifest.c87030ec34e905200dd783ec47cc4f58.js",
+    "service-worker.js": "/wp-content/themes/salient-child/react/profile/service-worker.js",
+    "static/css/main.4a01ebe2.chunk.css.map": "/wp-content/themes/salient-child/react/profile/static/css/main.4a01ebe2.chunk.css.map",
+    "static/js/2.0dc72124.chunk.js.LICENSE": "/wp-content/themes/salient-child/react/profile/static/js/2.0dc72124.chunk.js.LICENSE",
+    "static/media/styles.css": "/wp-content/themes/salient-child/react/profile/static/media/3sixD-hero.fe30e49e.jpg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.f14333bd.js",
+    "static/js/2.0dc72124.chunk.js",
+    "static/css/main.4a01ebe2.chunk.css",
+    "static/js/main.5938146e.chunk.js"
+  ]
+}

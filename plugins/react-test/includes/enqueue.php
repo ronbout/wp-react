@@ -14,6 +14,9 @@ add_action('init', function () {
 
 	add_action('wp_enqueue_scripts', function () {
 
+		//fonts.googleapis.com/icon?family=Material+Icons
+		wp_enqueue_style('material-icons', '//fonts.googleapis.com/icon?family=Material+Icons');
+
 		$asset_manifest = json_decode(file_get_contents(TSD_RT_ASSET_MANIFEST), true)['files'];
 
 		if (isset($asset_manifest['main.css'])) {
