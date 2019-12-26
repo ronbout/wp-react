@@ -1,11 +1,11 @@
 <?php 
 
 	
-	add_action('add_meta_boxes', 'nectar_metabox_posts');
+	add_action('add_meta_boxes_post', 'nectar_metabox_posts');
 	function nectar_metabox_posts(){
 		
 		
-		$options = get_option('salient'); 
+		$options = get_nectar_theme_options(); 
 		if(!empty($options['transparent-header']) && $options['transparent-header'] == '1') {
 			$disable_transparent_header = array( 
 						'name' =>  __('Disable Transparency From Navigation', NECTAR_THEME_NAME),
@@ -75,6 +75,13 @@
 			'priority' => 'high',
 			'fields' => array(
 				array(
+						'name' =>  __('Quote Author', NECTAR_THEME_NAME),
+						'desc' => __('Please input the name of who your quote is from. Is left blank the post title will be used.', NECTAR_THEME_NAME),
+						'id' => '_nectar_quote_author',
+						'type' => 'text',
+						'std' => ''
+					),
+				array(
 						'name' =>  __('Quote Content', NECTAR_THEME_NAME),
 						'desc' => __('Please type the text for your quote here.', NECTAR_THEME_NAME),
 						'id' => '_nectar_quote',
@@ -119,15 +126,15 @@
 			'priority' => 'high',
 			'fields' => array(
 				array( 
-					'name' => __('M4V File URL', NECTAR_THEME_NAME),
-					'desc' => __('Please upload the .m4v video file. <br/><strong>You must include both formats.</strong>', NECTAR_THEME_NAME),
+					'name' => __('MP4 File URL', NECTAR_THEME_NAME),
+					'desc' => __('Please upload the .m4v video file.', NECTAR_THEME_NAME),
 					'id' => '_nectar_video_m4v',
 					'type' => 'media', 
 					'std' => ''
 				),
 				array( 
 						'name' => __('OGV File URL', NECTAR_THEME_NAME),
-						'desc' => __('Please upload the .ogv video file  <br/><strong>You must include both formats.</strong>', NECTAR_THEME_NAME),
+						'desc' => __('Please upload the .ogv video file', NECTAR_THEME_NAME),
 						'id' => '_nectar_video_ogv',
 						'type' => 'media',
 						'std' => ''
@@ -184,7 +191,8 @@
 		#-----------------------------------------------------------------#
 		# Post Configuration
 		#-----------------------------------------------------------------# 
-		if(!empty($options['blog_masonry_type']) && $options['blog_masonry_type'] == 'meta_overlaid') {
+		if(!empty($options['blog_masonry_type']) && $options['blog_masonry_type'] == 'meta_overlaid' ||
+			!empty($options['blog_masonry_type']) && $options['blog_masonry_type'] == 'classic_enhanced') {
 			$meta_box = array(
 				'id' => 'nectar-metabox-post-config',
 				'title' =>  __('Post Configuration', NECTAR_THEME_NAME),
@@ -201,7 +209,7 @@
 						'std' => 'tall_regular',
 						'options' => array(
 							"regular" => "Regular",
-					  		"wide_tall" => "Regular x2",
+					  		"wide_tall" => "Regular Alt",
 					  		"large_featured" => "Large Featured",
 						)
 					)
@@ -268,6 +276,18 @@
 		                'std' => 1
 					),	
 				$header_height,
+				array( 
+						'name' => __('Background Alignment', NECTAR_THEME_NAME),
+						'desc' => __('Please choose how you would like your header background to be aligned', NECTAR_THEME_NAME),
+						'id' => '_nectar_page_header_bg_alignment',
+						'type' => 'select',
+						'std' => 'top',
+						'options' => array(
+							"top" => "Top",
+					  	"center" => "Center",
+					  	"bottom" => "Bottom"
+						)
+					),
 				array( 
 						'name' => __('Page Header Background Color', NECTAR_THEME_NAME),
 						'desc' => __('Set your desired page header background color if not using an image', NECTAR_THEME_NAME),

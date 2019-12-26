@@ -12,6 +12,18 @@
 
 }
 
+body [class^="icon-arrows"], body [class*=" icon-arrows"],
+body [class^="icon-basic"], body [class*=" icon-basic"], 
+body [class^="icon-basic-elaboration"], body [class*=" icon-basic-elaboration"], 
+body [class^="icon-ecommerce"], body [class*=" icon-ecommerce"], 
+body [class^="icon-music"], body [class*=" icon-music"], 
+body [class^="icon-software"], body [class*=" icon-software"], 
+body [class^="icon-weather"], body [class*=" icon-weather"] {
+  height: auto;
+  width: auto;
+  line-height: inherit;
+  background-color: transparent!important;
+}
 
 [class^="icon-arrows"]:before,
 [class*=" icon-arrows"]:before {

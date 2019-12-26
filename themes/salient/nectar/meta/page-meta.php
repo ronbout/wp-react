@@ -1,8 +1,8 @@
 <?php 
-add_action('add_meta_boxes', 'nectar_metabox_page');
+add_action('add_meta_boxes_page', 'nectar_metabox_page');
 function nectar_metabox_page(){
     
-	$options = get_option('salient'); 
+	$options = get_nectar_theme_options(); 
 	if(!empty($options['transparent-header']) && $options['transparent-header'] == '1') {
 		$disable_transparent_header = array( 
 					'name' =>  __('Disable Transparency From Navigation', NECTAR_THEME_NAME),
@@ -23,6 +23,127 @@ function nectar_metabox_page(){
 		$force_transparent_header = null;
 	}
 	
+	#-----------------------------------------------------------------#
+	# Fullscreen rows
+	#-----------------------------------------------------------------#
+    $meta_box = array(
+		'id' => 'nectar-metabox-fullscreen-rows',
+		'title' => __('Page Full Screen Rows', NECTAR_THEME_NAME),
+		'description' => __('Here you can configure your page fullscreen rows', NECTAR_THEME_NAME),
+		'post_type' => 'page',
+		'context' => 'normal',
+		'priority' => 'high',
+		'fields' => array(
+
+				array( 
+					'name' => __('Activate Fullscreen Rows', NECTAR_THEME_NAME),
+					'desc' => __('This will cause all rows to be fullscreen. Some functionality and options within visual composer will be changed when this is active.', NECTAR_THEME_NAME),
+					'id' => '_nectar_full_screen_rows',
+					'type' => 'choice_below',
+					'options' => array(
+						'off' => 'Off',
+						'on' => 'On'
+					),
+					'std' => 'off'
+				),
+				array( 
+					'name' => __('Animation Bewteen Rows', NECTAR_THEME_NAME),
+					'desc' => __('Select your desired animation between rows', NECTAR_THEME_NAME),
+					'id' => '_nectar_full_screen_rows_animation',
+					'type' => 'select',
+					'std' => 'none',
+					'options' => array(
+						"none" => "Default Scroll",
+				  		 "zoom-out-parallax" => "Zoom Out + Parallax",
+				  		 "parallax" => "Parallax"
+					)
+				),
+				array( 
+					'name' => __('Animation Speed', NECTAR_THEME_NAME),
+					'desc' => __('Selection your desired animation speed', NECTAR_THEME_NAME),
+					'id' => '_nectar_full_screen_rows_animation_speed',
+					'type' => 'select',
+					'std' => 'medium',
+					'options' => array(
+						"slow" => "Slow",
+				  		 "medium" => "Medium",
+				  		 "fast" => "Fast"
+					)
+				),
+				array( 
+					'name' => __('Overall BG Color', NECTAR_THEME_NAME),
+					'desc' => __('Set your desired background color which will be seen when transitioning through rows. Defaults to #333333', NECTAR_THEME_NAME),
+					'id' => '_nectar_full_screen_rows_overall_bg_color',
+					'type' => 'color',
+					'std' => ''
+				),
+				array(
+					'name' =>  __('Add Row Anchors to URL', NECTAR_THEME_NAME),
+					'desc' => __('Enable this to add anchors into your URL for each row.', NECTAR_THEME_NAME),
+					'id' => '_nectar_full_screen_rows_anchors',
+					'type' => 'checkbox',
+	                'std' => '0'
+				),
+				array(
+					'name' =>  __('Disable On Mobile', NECTAR_THEME_NAME),
+					'desc' => __('Check this to disable the page full screen rows when viewing on a mobile device.', NECTAR_THEME_NAME),
+					'id' => '_nectar_full_screen_rows_mobile_disable',
+					'type' => 'checkbox',
+	                'std' => '0'
+				),
+				array( 
+					'name' => __('Row BG Image Animation', NECTAR_THEME_NAME),
+					'desc' => __('Select your desired row BG image animation', NECTAR_THEME_NAME),
+					'id' => '_nectar_full_screen_rows_row_bg_animation',
+					'type' => 'select',
+					'std' => 'none',
+					'options' => array(
+						"none" => "None",
+				  		 "ken_burns" => "Ken Burns Zoom"
+					)
+				),
+				array( 
+					'name' => __('Dot Navigation', NECTAR_THEME_NAME),
+					'desc' => __('Select your desired dot navigation style', NECTAR_THEME_NAME),
+					'id' => '_nectar_full_screen_rows_dot_navigation',
+					'type' => 'select',
+					'std' => 'tooltip',
+					'options' => array(
+						"transparent" => "Transparent",
+				  		 "tooltip" => "Tooltip",
+				  		 "tooltip_alt" => "Tooltip Alt",
+				  		 "hidden" => "None (Hidden)"
+					)
+				),
+				array( 
+					'name' => __('Row Overflow', NECTAR_THEME_NAME),
+					'desc' => __('Select how you would like rows to be handled that have content taller than the users window height. This only applies to desktop (mobile will automatically get scrollbars)', NECTAR_THEME_NAME),
+					'id' => '_nectar_full_screen_rows_content_overflow',
+					'type' => 'select',
+					'std' => 'tooltip',
+					'options' => array(
+						"scrollbar" => "Provide Scrollbar",
+				  		"hidden" => "Hide Extra Content",
+					)
+				),
+				array( 
+					'name' => __('Page Footer', NECTAR_THEME_NAME),
+					'desc' => __('This option allows you to define what will be used for the footer after your fullscreen rows', NECTAR_THEME_NAME),
+					'id' => '_nectar_full_screen_rows_footer',
+					'type' => 'select',
+					'std' => 'none',
+					'options' => array(
+						"default" => "Default Footer",
+						"last_row" => "Last Row",
+						"none" => "None"
+					)
+				),
+		)
+	);
+	$callback = create_function( '$post,$meta_box', 'nectar_create_meta_box( $post, $meta_box["args"] );' );
+	add_meta_box( $meta_box['id'], $meta_box['title'], $callback, $meta_box['post_type'], $meta_box['context'], $meta_box['priority'], $meta_box );
+	
+
 	#-----------------------------------------------------------------#
 	# Header Settings
 	#-----------------------------------------------------------------#
@@ -53,6 +174,7 @@ function nectar_metabox_page(){
 					'desc' => 'Add images here that will be used to create the particle shapes.',
 					'id' => '_nectar_canvas_shapes',
 					'type' => 'canvas_shape_group',
+					'class' => 'nectar_slider_canvas_shape',
 					'std' => ''
 				),
 
@@ -192,7 +314,7 @@ function nectar_metabox_page(){
 				),
 			array( 
 					'name' => __('Background Alignment', NECTAR_THEME_NAME),
-					'desc' => __('Please choose how you would like your slides background to be aligned', NECTAR_THEME_NAME),
+					'desc' => __('Please choose how you would like your header background to be aligned', NECTAR_THEME_NAME),
 					'id' => '_nectar_page_header_bg_alignment',
 					'type' => 'select',
 					'std' => 'center',
@@ -213,6 +335,13 @@ function nectar_metabox_page(){
 					'name' => __('Page Header Font Color', NECTAR_THEME_NAME),
 					'desc' => __('Set your desired page header font color', NECTAR_THEME_NAME),
 					'id' => '_nectar_header_font_color',
+					'type' => 'color',
+					'std' => ''
+				),
+			array( 
+					'name' => __('Page Header Overlay Color', NECTAR_THEME_NAME),
+					'desc' => __('This will be applied ontop on your page header BG image (if supplied).', NECTAR_THEME_NAME),
+					'id' => '_nectar_header_bg_overlay_color',
 					'type' => 'color',
 					'std' => ''
 				),

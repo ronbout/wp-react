@@ -2,7 +2,11 @@
 /*template name: Home - Recent Work/Posts */
 get_header(); ?>
 	
-<?php $options = get_option('salient'); ?>
+<?php $options = get_nectar_theme_options();  ?>
+
+<?php 
+$nectar_disable_home_slider = (!empty($options['disable_home_slider_pt']) && $options['disable_home_slider_pt'] == '1') ? true : false; 
+if($nectar_disable_home_slider != true) { ?>
 
 <div id="featured" data-caption-animation="<?php echo (!empty($options['slider-caption-animation']) && $options['slider-caption-animation'] == 1) ? '1' : '0'; ?>" data-bg-color="<?php if(!empty($options['slider-bg-color'])) echo $options['slider-bg-color']; ?>" data-slider-height="<?php if(!empty($options['slider-height'])) echo $options['slider-height']; ?>" data-animation-speed="<?php if(!empty($options['slider-animation-speed'])) echo $options['slider-animation-speed']; ?>" data-advance-speed="<?php if(!empty($options['slider-advance-speed'])) echo $options['slider-advance-speed']; ?>" data-autoplay="<?php echo $options['slider-autoplay'];?>"> 
 	
@@ -42,7 +46,7 @@ get_header(); ?>
 							        else if( !empty($video_m4v) && $wp_version < "3.6" || !empty($video_ogv) && $wp_version < "3.6") {
 							        	
 							        	 echo '<div class="video">'; 
-							            	 nectar_video($post->ID); 
+							            	 //nectar_video($post->ID); 
 										 echo '</div>'; 
 										 
 							        } 
@@ -95,6 +99,7 @@ get_header(); ?>
 	<?php wp_reset_postdata(); ?>
 </div>
 
+<?php } ?>
 
 <div class="home-wrap">
 	
@@ -183,17 +188,7 @@ get_header(); ?>
 								//video 
 							    if( !empty($video_embed) || !empty($video_m4v) ) {
 	
-								    if( !empty( $video_embed) && $wp_version < "3.6" ) {
-								    	
-								    	echo '<a href="#video-popup-'.$post->ID.'" class="pp">'.__("Watch Video", NECTAR_THEME_NAME).' </a> ';
-										echo '<div id="video-popup-'.$post->ID.'">';
-								        echo '<div class="video-wrap">' . stripslashes(htmlspecialchars_decode($video_embed)) . '</div>';
-										echo '</div>';
-								    } 
-								    
-								    else {
-										 echo '<a href="'.get_template_directory_uri(). '/includes/portfolio-functions/video.php?post-id=' .$post->ID.'&iframe=true&width=854" class="pp" >'.__("Watch Video", NECTAR_THEME_NAME).'</a> ';	 
-								     }
+								    echo nectar_portfolio_video_popup_link($post, '1', $video_embed, $video_m4v);
 		
 						        } 
 								
@@ -211,7 +206,7 @@ get_header(); ?>
 					
 					<div class="work-meta">
 						<h4 class="title"><?php the_title(); ?></h4>
-						<?php $options = get_option('salient'); 
+						<?php global $options; 
 							if(!empty($options['portfolio_date']) && $options['portfolio_date'] == 1) echo get_the_date();
 						?>
 					</div>
@@ -281,7 +276,7 @@ get_header(); ?>
 					             if( !empty( $video_embed ) ) {
 					                 echo '<div class="video-wrap">' . stripslashes(htmlspecialchars_decode($video_embed)) . '</div>';
 					             } else { 
-					                 nectar_video($post->ID); 
+					                 //nectar_video($post->ID); 
 					             }
 							 }
 						  	 else {
@@ -305,7 +300,7 @@ get_header(); ?>
 						          else if( !empty($video_m4v) && $wp_version < "3.6") {
 						        	
 						          	   echo '<div class="video">'; 
-						              	   nectar_video($post->ID); 
+						              	   //nectar_video($post->ID); 
 									   echo '</div>'; 
 									 
 						          } 
@@ -335,7 +330,7 @@ get_header(); ?>
 							<div class="audio-wrap">		
 								<?php 
 								if ( $wp_version < "3.6" ) {
-								    nectar_audio($post->ID);
+								    //nectar_audio($post->ID);
 								} 
 								else {
 									$audio_mp3 = get_post_meta($post->ID, '_nectar_audio_mp3', true);
@@ -360,13 +355,8 @@ get_header(); ?>
 							
 							if ( $wp_version < "3.6" ) {
 								
-								if(MultiPostThumbnails::has_post_thumbnail(get_post_type(), 'second-slide')) {
-									nectar_gallery($post->ID);
-								}
+								if ( has_post_thumbnail() ) { echo get_the_post_thumbnail($post->ID, 'full', array('title' => '')); }
 								
-								else {
-									if ( has_post_thumbnail() ) { echo get_the_post_thumbnail($post->ID, 'full', array('title' => '')); }
-								}
 							}
 							
 							else {

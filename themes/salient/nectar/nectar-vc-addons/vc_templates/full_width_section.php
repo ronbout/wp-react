@@ -19,10 +19,12 @@
 	  'video_ogv'=> '', 
 	  'video_image'=> '', 
 	  
-	  "top_padding" => "20", 
-	  "bottom_padding" => "20",
-	  'text_color' => 'dark',  
-	  'custom_text_color' => '',  
+	  "top_padding" => "40", 
+	  "bottom_padding" => "40",
+	  'text_color' => 'light',  
+	  'custom_text_color' => '',
+	  'row_name' => '',
+	  'full_screen_row_position' => 'middle',  
 	  'class' => ''), 
 	$atts));
 	
@@ -80,8 +82,15 @@
 		$vertically_center_class = null;
 	}
 	
-	$style .= 'padding-top: '. $top_padding .'px; ';
-	$style .= 'padding-bottom: '. $bottom_padding .'px; ';
+	global $post;
+	$page_full_screen_rows = (isset($post->ID)) ? get_post_meta($post->ID, '_nectar_full_screen_rows', true) : '';
+	
+	if($page_full_screen_rows != 'on') {
+
+		$style .= 'padding-top: '. $top_padding .'px; ';
+		$style .= 'padding-bottom: '. $bottom_padding .'px; ';
+
+	}
 	
 	if(!empty($custom_text_color)) {
 		$style .= 'color: '. $custom_text_color .'; ';
@@ -102,8 +111,14 @@
 		$main_class = "full-width-content ";
 	}
 	 
+	//remove in container possibility when using fullpage.js
+	if($page_full_screen_rows == 'on' && $type == 'in_container') $main_class = "full-width-section ";
+
+
     echo'<div id="'.uniqid("fws_").'" class="wpb_row vc_row-fluid '. $main_class . $parallax_class . ' ' . $vertically_center_class . ' ' . $class . ' " '.$using_custom_text_color.' style="'.$style.'">';
 	
+	if($page_full_screen_rows == 'on') echo '<div class="full-page-inner-wrap-outer"><div class="full-page-inner-wrap" data-name="'.$row_name.'" data-content-pos="'.$full_screen_row_position.'"><div class="full-page-inner">';
+
 	//row bg 
 	echo '<div class="row-bg-wrap"> <div class="row-bg '.$using_image_class . ' ' . $using_bg_color_class . ' '. $etxra_class.'" style="'.$bg_props.'"></div> </div>';
 	
@@ -157,6 +172,28 @@
 	}
 
 
-    echo '<div class="col span_12 '.strtolower($text_color).' ' .$text_align.'">'.do_shortcode($content).'</div></div>';
+	$extra_container_div = null;
+	$extra_container_div_closing = null;
+	if($page_full_screen_rows == 'on' && $main_class == "full-width-section ") {
+		$extra_container_div = '<div class="container">';
+		$extra_container_div_closing = '</div>';
+
+		$pattern = get_shortcode_regex();
+	
+		if ( preg_match_all( '/'. $pattern .'/s', $content, $matches )  && array_key_exists( 0, $matches ))  {
+    	
+			if($matches[0][0]){
+				if( strpos($matches[0][0],'nectar_slider') !== false && strpos($matches[0][0],'full_width="true"') !== false 
+					|| strpos($matches[0][0],' type="full_width_content"') !== false && strpos($matches[0][0],'nectar_slider') !== false && strpos($matches[0][0],'[vc_column width="1/1"') !== false ) {
+					$extra_container_div = null;
+					$extra_container_div_closing = null;
+				}
+			}
+		}
+	}
+
+    echo $extra_container_div.'<div class="col span_12 '.strtolower($text_color).' ' .$text_align.'">'.do_shortcode($content).'</div></div>'.$extra_container_div_closing;
+
+    if($page_full_screen_rows == 'on') echo '</div></div></div><!--inner-wrap-->';
 	
 ?>

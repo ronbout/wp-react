@@ -6,7 +6,7 @@
 
 <?php
 // pass data to the react component
-    $cand_id = get_query_var('candid', 22);
+$cand_id = get_candid();
 echo "
 	<script>
 		 window.tsdData = { candId: {$cand_id} }
@@ -43,3 +43,20 @@ echo "
 
 </div>
 <?php get_footer();
+
+function get_candid()
+{
+    // check if the user has a candidate id.  if so, use that.
+    // otherwise, check the query vars.
+    $candid = 0;
+    $user = wp_get_current_user();
+    if ($user) {
+        $candid = get_user_meta($user->ID, 'candidate_id', true);
+    }
+    if (!$candid) {
+        // see if anything was present in the query string
+        $candid = get_query_var('candid', 0);
+    }
+
+    return $candid;
+}

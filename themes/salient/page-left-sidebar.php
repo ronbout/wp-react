@@ -10,7 +10,7 @@ get_header(); ?>
 		
 		<div class="row">
 			
-			<div id="post-area" class="col span_9 col_last">
+			<div class="post-area col span_9 col_last">
 				<?php 
 				
 				if(have_posts()) : while(have_posts()) : the_post(); ?>

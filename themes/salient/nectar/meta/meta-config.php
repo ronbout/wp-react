@@ -371,7 +371,8 @@ function nectar_create_meta_box( $post, $meta_box )
 */
 
 				if ( function_exists( 'wp_enqueue_media' ) ) {
-	                wp_enqueue_media();
+	               
+	            
 	            } else {
 	                wp_enqueue_script( 'media-upload' );
 	                wp_enqueue_script( 'thickbox' );
@@ -388,7 +389,7 @@ function nectar_create_meta_box( $post, $meta_box )
 
 
 			    echo '<td>
-				<fieldset id="nectar_slider_canvas_shape" class="redux-field-container redux-field redux-container-gallery" data-id="opt-gallery" data-type="gallery">
+				<fieldset id="'. $field['class'].'" class="redux-field-container redux-field redux-container-gallery" data-id="opt-gallery" data-type="gallery">
 			    <div class="screenshot">';
 
 	            if ( ! empty( $meta) ) {

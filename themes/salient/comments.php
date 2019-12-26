@@ -17,12 +17,12 @@
 
 <!-- You can start editing here. -->
 <?php 
-$options = get_option('salient'); 
+$options = get_nectar_theme_options(); 
 $fw_class = (!empty($options['theme-skin']) && $options['theme-skin'] == 'ascend') ? 'full-width-section custom-skip': null; ?>
-<div class="comment-wrap <?php echo $fw_class;?>">
+<div class="comment-wrap <?php echo $fw_class;?>" data-midnight="dark">
 
 <?php if ( have_comments() ) : ?>
-	<h3 id="comments"><?php  if(!empty($options['theme-skin']) && $options['theme-skin'] == 'ascend') echo '<span><i>'. __("Join the discussion").'</i></span>' ?> <?php comments_number(__('No Comments',NECTAR_THEME_NAME), __('One Comment', NECTAR_THEME_NAME), __('% Comments', NECTAR_THEME_NAME) );?></h3>
+	<h3 id="comments"><?php  if(!empty($options['theme-skin']) && $options['theme-skin'] == 'ascend') echo '<span><i>'. __("Join the discussion", NECTAR_THEME_NAME).'</i></span>' ?> <?php comments_number(__('No Comments',NECTAR_THEME_NAME), __('One Comment', NECTAR_THEME_NAME), __('% Comments', NECTAR_THEME_NAME) );?></h3>
 
 	<div class="navigation">
 		<div class="alignleft"><?php previous_comments_link() ?></div>
@@ -49,7 +49,8 @@ $fw_class = (!empty($options['theme-skin']) && $options['theme-skin'] == 'ascend
 <?php if ( comments_open() ) : 
 
 $required_text = null;
-
+$form_style = (!empty($options['form-style'])) ? $options['form-style'] : 'default'; 
+$comment_label = ($form_style == 'minimal') ? '<label for="comment">' . __('My comment is..', NECTAR_THEME_NAME) . '</label>' : null;
 $args = array(
   'id_form'           => 'commentform',
   'id_submit'         => 'submit',
@@ -58,7 +59,7 @@ $args = array(
   'cancel_reply_link' => __( 'Cancel Reply', NECTAR_THEME_NAME ),
   'label_submit'      => __( 'Submit Comment', NECTAR_THEME_NAME ),
 
-  'comment_field' =>  '<div class="row"><div class="col span_12"><textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></div></div>',
+  'comment_field' =>  '<div class="row"><div class="col span_12">'.$comment_label.'<textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></div></div>',
 
   'must_log_in' => '<p class="must-log-in">' .
     sprintf(

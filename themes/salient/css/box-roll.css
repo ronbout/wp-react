@@ -32,6 +32,9 @@ html {
  /*.container-wrap.no-scroll .main-content > .row > div > div[class*="col"] { opacity: 0; }
  .container-wrap.auto-height .main-content > .row > div > div[class*="col"] { opacity: 1; } */
 
+body.material .ocm-effect-wrap {
+	height: 100%;
+}
 
 #ajax-content-wrap.no-scroll {
 	height: 100%!important;
@@ -55,6 +58,12 @@ html {
 
 .container-wrap.auto-height, #footer-outer.auto-height {
 	height: auto!important;
+}
+
+.container-wrap.no-trans {
+	-webkit-transform: none;
+	-moz-transform: none;
+	transform: none;
 }
 
 #header-space {
@@ -151,7 +160,7 @@ html {
 	width: 100%;
 	height: 100%;
 	position: absolute;
-	vbackface-visibility: visible;
+	backface-visibility: visible;
 	-webkit-transform: translate3d(0, 0, 0);
 	-moz-transform: translate3d(0, 0, 0);
 	transform: translate3d(0, 0, 0);
@@ -251,8 +260,8 @@ html {
 	-webkit-box-shadow: none!important;
 	-webkit-transform-origin: 50% 0%;
 	transform-origin: 50% 0%;
-	-webkit-animation: rotateCubeBottomOut 0s both cubic-bezier(0.450, 0.055, 0.675, 0.190); 
-	animation: rotateCubeBottomOut 0s both cubic-bezier(0.450, 0.055, 0.675, 0.190); 
+	-webkit-animation: rotateCubeBottomOut linear; 
+	animation: rotateCubeBottomOut linear; 
 }
 
 

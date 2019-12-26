@@ -6,7 +6,7 @@
 			
 			<div class="post-meta">
 				
-				<?php $options = get_option('salient'); 
+				<?php $options = get_nectar_theme_options(); 
 				$blog_type = $options['blog_type']; ?>
 				
 				<div class="date">
@@ -17,7 +17,7 @@
 					
 						<span class="month"><?php the_time('M'); ?></span>
 						<span class="day"><?php the_time('d'); ?></span>
-						<?php $options = get_option('salient'); 
+						<?php global $options; 
 						if(!empty($options['display_full_date']) && $options['display_full_date'] == 1) {
 							echo '<span class="year">'. get_the_time('Y') .'</span>';
 						}

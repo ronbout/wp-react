@@ -15,7 +15,7 @@
       var settings = $.extend({
         'footerID': '',
         'contentID': '',
-        'orientation': $(this).css('float')
+        'orientation': 'right'
       }, options);
 
       var sticky = {
@@ -66,7 +66,7 @@
 	  //destroy sticky sidebar if the sidebar is shorter than the content area
 	  function toLiveOrDie(){
 
-	  	if(parseInt($('#sidebar').height()) + 50 >= parseInt($('#post-area').height())) {
+	  	if(parseInt($('#sidebar').height()) + 50 >= parseInt($('.post-area').height())) {
       	 	sticky.win.unbind('scroll', stick);
       	 	sticky.el.removeClass('fixed-sidebar');
       	 	sticky.el.css({
@@ -100,11 +100,17 @@
       //  Calcualtes the limits top and bottom limits for the sidebar
       function calculateLimits() {
 
+        var $bottomControls = ($('.bottom_controls').length > 0) ? $('.bottom_controls').outerHeight(true) : 0;
+        var $ascendComments = ($('.comment-wrap.full-width-section').length > 0) ? $('.comment-wrap.full-width-section').outerHeight(true) : 0;
+        var $footerHeight = ($('body[data-footer-reveal="1"]').length == 0) ? $('#footer-outer').height() : 0 ;
+
         return {
-          limit: settings.footerID.offset().top - sticky.stickyHeight - $headerHeight - $extraHeight - secondaryHeader,
+          limit: ($('#ajax-content-wrap').height() + $('#ajax-content-wrap').offset().top) - sticky.stickyHeight - $footerHeight -$headerHeight - $extraHeight - secondaryHeader - $bottomControls - $ascendComments,
           windowTop: sticky.win.scrollTop(),
           stickyTop: sticky.stickyTop2 - sticky.marg - $headerHeight - $extraHeight - secondaryHeader
         }
+
+
       }
 
       // Sets sidebar to fixed position
@@ -151,8 +157,9 @@
       function stick() {
         var tops = calculateLimits();
         var hitBreakPoint = tops.stickyTop < tops.windowTop && (sticky.win.width() >= sticky.breakPoint);
-		$headerHeight = $('#header-outer').outerHeight() + 34;	
-		
+		    $headerHeight = $('#header-outer').outerHeight() + 34;	
+		  
+
         if (hitBreakPoint) {
           setFixedSidebar();
           checkOrientation();
@@ -160,6 +167,7 @@
           setStaticSidebar();
         }
         if (tops.limit < tops.windowTop) {
+
           var diff = tops.limit - tops.windowTop;
           setLimitedSidebar(diff);
         }

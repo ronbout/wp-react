@@ -2,7 +2,7 @@
 /*template name: Portfolio */
 get_header(); 
 
-$options = get_option('salient');  
+$options = get_nectar_theme_options(); 
 
 //calculate cols
 if(!empty($options['main_portfolio_layout'])) {
@@ -41,11 +41,13 @@ if(!empty($cols)) {
 } 
 
 $project_style = (!empty($options['main_portfolio_project_style'])) ? $options['main_portfolio_project_style'] : '1' ;
+$item_spacing = (!empty($options['main_portfolio_item_spacing'])) ? $options['main_portfolio_item_spacing'] : 'default';
 $masonry_layout = (!empty($options['portfolio_use_masonry']) && $options['portfolio_use_masonry'] == '1') ? 'true' : 'false';
+$masonry_sizing_type = (!empty($options['portfolio_masonry_grid_sizing']) && $options['portfolio_masonry_grid_sizing'] == 'photography') ? 'photography' : 'default';
 $infinite_scroll_class = (!empty($options['portfolio_pagination_type']) && $options['portfolio_pagination_type'] == 'infinite_scroll') ? ' infinite_scroll' : null;
 $lightbox_only = false;
 
-//disable masonry for default project style fullwidtrh
+//disable masonry for default project style fullwidth
 if($project_style == '1' && $cols == 'elastic') $masonry_layout = 'false';
 
 $display_sortable = get_post_meta($post->ID, 'nectar-metabox-portfolio-display-sortable', true);
@@ -119,7 +121,7 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 			$filters_width = (!empty($options['header-fullwidth']) && $options['header-fullwidth'] == '1' && $cols == 'elastic') ? 'full-width-content ': 'full-width-section ';
 
 			?>
-			<div class="<?php echo $filters_id .' '; echo $filters_width; if($span_num != 'elastic-portfolio-item') echo 'non-fw'; ?>">
+			<div class="<?php echo $filters_id .' '; echo $filters_width; if($span_num != 'elastic-portfolio-item') echo 'non-fw'; ?>" data-color-scheme="default">
 				<div class="container">
 					<span id="current-category"><?php echo __('All', NECTAR_THEME_NAME); ?></span>
 					<ul>
@@ -132,11 +134,12 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 			</div>
 		<?php } ?>
 		
-		<div class="portfolio-wrap <?php if($project_style == '1' && $span_num == 'elastic-portfolio-item') echo 'default-style'; ?>">
+		<div class="portfolio-wrap <?php if($project_style == '1' && $span_num == 'elastic-portfolio-item') echo 'default-style'; if($project_style == '6' && $span_num == 'elastic-portfolio-item') echo 'spaced'; ?>">
 			
 			<?php
 			$default_loader_class = (empty($options['loading-image']) && !empty($options['theme-skin']) && $options['theme-skin'] == 'ascend') ? 'default-loader' : null; 
-			$default_loader = (empty($options['loading-image']) && !empty($options['theme-skin']) && $options['theme-skin'] == 'ascend') ? '<span class="default-loading-icon spin"></span>' : null; ?>
+			$default_loader = (empty($options['loading-image']) && !empty($options['theme-skin']) && $options['theme-skin'] == 'ascend') ? '<span class="default-loading-icon spin"></span>' : null; 
+			$load_in_animation = (!empty($options['portfolio_loading_animation'])) ? $options['portfolio_loading_animation'] : 'none'; ?>
 
 			<span class="portfolio-loading <?php echo $default_loader_class; ?> <?php echo (!empty($options['loading-image-animation']) && !empty($options['loading-image'])) ? $options['loading-image-animation'] : null; ?>">  <?php echo $default_loader; ?> </span>
 
@@ -168,7 +171,7 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 			
 			?>
 			
-			<div id="portfolio" class="row portfolio-items <?php if($masonry_layout == 'true') echo 'masonry-items'; ?> <?php echo $infinite_scroll_class; ?>" data-categories-to-show="<?php echo $project_categories; ?>" data-starting-filter="" data-col-num="<?php echo $cols; ?>">
+			<div id="portfolio" class="row portfolio-items <?php if($masonry_layout == 'true') echo 'masonry-items'; else { echo 'no-masonry'; } ?> <?php echo $infinite_scroll_class; ?>" data-categories-to-show="<?php echo $project_categories; ?>" data-gutter="<?php echo $item_spacing; ?>" data-masonry-type="<?php echo $masonry_sizing_type; ?>" data-ps="<?php echo $project_style; ?>" data-starting-filter="" data-col-num="<?php echo $cols; ?>">
 				<?php 
 				
 				$posts_per_page = '-1';
@@ -205,11 +208,19 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 					   $masonry_item_content_pos = get_post_meta($post->ID, '_portfolio_item_masonry_content_pos', true);
 					  if(empty($masonry_item_content_pos)) $masonry_item_content_pos = 'middle';
 
+					  $masonry_sizing_type = (!empty($options['portfolio_masonry_grid_sizing']) && $options['portfolio_masonry_grid_sizing'] == 'photography') ? 'photography' : 'default';
+
+					  //no tall size for photography
+					  if($masonry_sizing_type == 'photography' && $masonry_item_sizing == 'tall') $masonry_item_sizing = 'wide_tall';
+
 					  $custom_project_link = get_post_meta($post->ID, '_nectar_external_project_url', true);
 					  $the_project_link = (!empty($custom_project_link)) ? $custom_project_link : get_permalink();
 					  
 					  $project_excerpt = get_post_meta($post->ID, '_nectar_project_excerpt', true);
-
+						
+						$customProjectClass = get_post_meta($post->ID, '_nectar_project_css_class', true);
+						if(!empty($customProjectClass)) $customProjectClass = ' ' . sanitize_text_field($customProjectClass);
+						
 					  $project_image_caption = get_post(get_post_thumbnail_id())->post_content;
 					  $project_image_caption = strip_tags($project_image_caption);
 					  
@@ -218,8 +229,10 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 					  $project_subtitle_color = get_post_meta($post->ID, '_nectar_project_subtitle_color', true);
 					?>
 					
-					<div class="col <?php echo $span_num . ' '. $masonry_item_sizing; ?> element <?php echo $project_cats; ?>" data-project-cat="<?php echo $project_cats; ?>" <?php if(!empty($project_accent_color)) { echo 'data-project-color="' . $project_accent_color .'"'; } else { echo 'data-default-color="true"';} ?> data-title-color="<?php echo $project_title_color; ?>" data-subtitle-color="<?php echo $project_subtitle_color; ?>">
+					<div class="col <?php echo $span_num . ' '. $masonry_item_sizing . $customProjectClass; ?> element <?php echo $project_cats; ?>" data-project-cat="<?php echo $project_cats; ?>" <?php if(!empty($project_accent_color)) { echo 'data-project-color="' . $project_accent_color .'"'; } else { echo 'data-default-color="true"';} ?> data-title-color="<?php echo $project_title_color; ?>" data-subtitle-color="<?php echo $project_subtitle_color; ?>">
 						
+						<div class="inner-wrap animated" data-animation="<?php echo $load_in_animation; ?>">
+
 						<?php //project style 1
 							
 							if($project_style == '1') { 
@@ -232,6 +245,12 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 								<?php
 				 				
 				 				$thumb_size = (!empty($masonry_item_sizing)) ? $masonry_item_sizing : 'portfolio-thumb';
+				 				if($masonry_sizing_type == 'photography' && !empty($masonry_item_sizing)) {
+									$thumb_size = $thumb_size.'_photography';
+
+									//no tall size in photography
+									if($thumb_size == 'tall_photography') $thumb_size = 'wide_tall_photography';
+								}
 								
 								//custom thumbnail
 								$custom_thumbnail = get_post_meta($post->ID, '_nectar_portfolio_custom_thumbnail', true); 
@@ -247,6 +266,15 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 									//no image added
 									else {
 										switch($thumb_size) {
+											case 'wide_photography':
+												$no_image_size = 'no-portfolio-item-photography-wide.jpg';
+												break;
+											case 'regular_photography':
+												$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+												break;
+											case 'wide_tall_photography':
+												$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+												break;
 											case 'wide':
 												$no_image_size = 'no-portfolio-item-wide.jpg';
 												break;
@@ -289,17 +317,7 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 											//video 
 										    if( !empty($video_embed) || !empty($video_m4v) ) {
 				
-											    if( !empty( $video_embed) && floatval(get_bloginfo('version')) < "3.6") {
-											    	
-											    	echo '<a href="#video-popup-'.$post->ID.'" class="pretty_photo default-link">'.__("Watch Video", NECTAR_THEME_NAME).'</a> ';
-													echo '<div id="video-popup-'.$post->ID.'">';
-											        echo '<div class="video-wrap">' . stripslashes(htmlspecialchars_decode($video_embed)) . '</div>';
-													echo '</div>';
-											    } 
-											    
-											    else {
-													 echo '<a href="'.get_template_directory_uri(). '/includes/portfolio-functions/video.php?post-id=' .$post->ID.'&iframe=true&width=854" class="pretty_photo default-link" >'.__("Watch Video", NECTAR_THEME_NAME).'</a> ';	 
-											     }
+											    echo nectar_portfolio_video_popup_link($post, $project_style, $video_embed, $video_m4v);
 					
 									        } 
 											
@@ -344,7 +362,13 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 								
 								<?php
 								$thumb_size = (!empty($masonry_item_sizing)) ? $masonry_item_sizing : 'portfolio-thumb';
-								
+								if($masonry_sizing_type == 'photography' && !empty($masonry_item_sizing)) {
+									$thumb_size = $thumb_size.'_photography';
+
+									//no tall size in photography
+									if($thumb_size == 'tall_photography') $thumb_size = 'wide_tall_photography';
+								}
+
 								//custom thumbnail
 								$custom_thumbnail = get_post_meta($post->ID, '_nectar_portfolio_custom_thumbnail', true); 
 								
@@ -360,6 +384,15 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 									//no image added
 									else {
 										switch($thumb_size) {
+											case 'wide_photography':
+												$no_image_size = 'no-portfolio-item-photography-wide.jpg';
+												break;
+											case 'regular_photography':
+												$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+												break;
+											case 'wide_tall_photography':
+												$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+												break;
 											case 'wide':
 												$no_image_size = 'no-portfolio-item-wide.jpg';
 												break;
@@ -406,17 +439,7 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 											//video 
 										    if( !empty($video_embed) || !empty($video_m4v) ) {
 				
-											    if( !empty( $video_embed) && floatval(get_bloginfo('version')) < "3.6") {
-											    	
-											    	echo '<a href="#video-popup-'.$post->ID.'" class="pretty_photo"></a> ';
-													echo '<div id="video-popup-'.$post->ID.'">';
-											        echo '<div class="video-wrap">' . stripslashes(htmlspecialchars_decode($video_embed)) . '</div>';
-													echo '</div>';
-											    } 
-											    
-											    else {
-													 echo '<a href="'.get_template_directory_uri(). '/includes/portfolio-functions/video.php?post-id=' .$post->ID.'&iframe=true&width=854" class="pretty_photo" ></a> ';	 
-											     }
+											    echo nectar_portfolio_video_popup_link($post, $project_style, $video_embed, $video_m4v);
 					
 									        } else { ?>
 									        	
@@ -455,6 +478,12 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 								
 								<?php
 								$thumb_size = (!empty($masonry_item_sizing)) ? $masonry_item_sizing : 'portfolio-thumb';
+								if($masonry_sizing_type == 'photography' && !empty($masonry_item_sizing)) {
+									$thumb_size = $thumb_size.'_photography';
+
+									//no tall size in photography
+									if($thumb_size == 'tall_photography') $thumb_size = 'wide_tall_photography';
+								}
 
 								//custom thumbnail
 								$custom_thumbnail = get_post_meta($post->ID, '_nectar_portfolio_custom_thumbnail', true); 
@@ -471,6 +500,15 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 									//no image added
 									else {
 										switch($thumb_size) {
+											case 'wide_photography':
+												$no_image_size = 'no-portfolio-item-photography-wide.jpg';
+												break;
+											case 'regular_photography':
+												$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+												break;
+											case 'wide_tall_photography':
+												$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+												break;
 											case 'wide':
 												$no_image_size = 'no-portfolio-item-wide.jpg';
 												break;
@@ -515,17 +553,7 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 											//video 
 										    if( !empty($video_embed) || !empty($video_m4v) ) {
 				
-											    if( !empty( $video_embed) && floatval(get_bloginfo('version')) < "3.6") {
-											    	
-											    	echo '<a href="#video-popup-'.$post->ID.'" class="pretty_photo"></a> ';
-													echo '<div id="video-popup-'.$post->ID.'">';
-											        echo '<div class="video-wrap">' . stripslashes(htmlspecialchars_decode($video_embed)) . '</div>';
-													echo '</div>';
-											    } 
-											    
-											    else {
-													 echo '<a href="'.get_template_directory_uri(). '/includes/portfolio-functions/video.php?post-id=' .$post->ID.'&iframe=true&width=854" class="pretty_photo" ></a> ';	 
-											     }
+											    echo nectar_portfolio_video_popup_link($post, $project_style, $video_embed, $video_m4v);
 					
 									        } else { ?>
 									        	
@@ -564,7 +592,13 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 								
 								<?php
 								$thumb_size = (!empty($masonry_item_sizing)) ? $masonry_item_sizing : 'portfolio-thumb';
-								
+								if($masonry_sizing_type == 'photography' && !empty($masonry_item_sizing)) {
+									$thumb_size = $thumb_size.'_photography';
+
+									//no tall size in photography
+									if($thumb_size == 'tall_photography') $thumb_size = 'wide_tall_photography';
+								}
+
 								//custom thumbnail
 								$custom_thumbnail = get_post_meta($post->ID, '_nectar_portfolio_custom_thumbnail', true); 
 								
@@ -580,6 +614,15 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 									//no image added
 									else {
 										switch($thumb_size) {
+											case 'wide_photography':
+												$no_image_size = 'no-portfolio-item-photography-wide.jpg';
+												break;
+											case 'regular_photography':
+												$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+												break;
+											case 'wide_tall_photography':
+												$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+												break;
 											case 'wide':
 												$no_image_size = 'no-portfolio-item-wide.jpg';
 												break;
@@ -626,17 +669,7 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 											//video 
 										    if( !empty($video_embed) || !empty($video_m4v) ) {
 				
-											    if( !empty( $video_embed) && floatval(get_bloginfo('version')) < "3.6") {
-											    	
-											    	echo '<a href="#video-popup-'.$post->ID.'" class="pretty_photo"></a> ';
-													echo '<div id="video-popup-'.$post->ID.'">';
-											        echo '<div class="video-wrap">' . stripslashes(htmlspecialchars_decode($video_embed)) . '</div>';
-													echo '</div>';
-											    } 
-											    
-											    else {
-													 echo '<a href="'.get_template_directory_uri(). '/includes/portfolio-functions/video.php?post-id=' .$post->ID.'&iframe=true&width=854" class="pretty_photo" ></a> ';	 
-											     }
+											    echo nectar_portfolio_video_popup_link($post, $project_style, $video_embed, $video_m4v);
 					
 									        } else { ?>
 									        	
@@ -673,7 +706,13 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 								
 								<?php
 								$thumb_size = (!empty($masonry_item_sizing)) ? $masonry_item_sizing : 'portfolio-thumb';
-								
+								if($masonry_sizing_type == 'photography' && !empty($masonry_item_sizing)) {
+									$thumb_size = $thumb_size.'_photography';
+
+									//no tall size in photography
+									if($thumb_size == 'tall_photography') $thumb_size = 'wide_tall_photography';
+								}
+
 								//custom thumbnail
 								$custom_thumbnail = get_post_meta($post->ID, '_nectar_portfolio_custom_thumbnail', true); 
 								
@@ -689,6 +728,15 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 									//no image added
 									else {
 										switch($thumb_size) {
+											case 'wide_photography':
+												$no_image_size = 'no-portfolio-item-photography-wide.jpg';
+												break;
+											case 'regular_photography':
+												$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+												break;
+											case 'wide_tall_photography':
+												$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+												break;
 											case 'wide':
 												$no_image_size = 'no-portfolio-item-wide.jpg';
 												break;
@@ -734,17 +782,7 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 											//video 
 										    if( !empty($video_embed) || !empty($video_m4v) ) {
 				
-											    if( !empty( $video_embed) && floatval(get_bloginfo('version')) < "3.6") {
-											    	
-											    	echo '<a href="#video-popup-'.$post->ID.'" class="pretty_photo"></a> ';
-													echo '<div id="video-popup-'.$post->ID.'">';
-											        echo '<div class="video-wrap">' . stripslashes(htmlspecialchars_decode($video_embed)) . '</div>';
-													echo '</div>';
-											    } 
-											    
-											    else {
-													 echo '<a href="'.get_template_directory_uri(). '/includes/portfolio-functions/video.php?post-id=' .$post->ID.'&iframe=true&width=854" class="pretty_photo" ></a> ';	 
-											     }
+											   echo nectar_portfolio_video_popup_link($post, $project_style, $video_embed, $video_m4v);
 					
 									        } else { ?>
 									        	
@@ -772,10 +810,521 @@ $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 								</div>
 							</div><!--work-item-->
 							
-						<?php } //project style 5 ?>
+						<?php } //project style 5 
+
+
+						else if($project_style == '6') { 
+
+							$using_custom_content = get_post_meta($post->ID, '_nectar_portfolio_custom_grid_item', true); 
+							$custom_content = get_post_meta($post->ID, '_nectar_portfolio_custom_grid_item_content', true); ?>
+							
+							<div class="work-item style-5" data-custom-content="<?php echo $using_custom_content; ?>" data-text-align="<?php echo $masonry_item_content_pos; ?>">
+								
+								<?php
+								$thumb_size = (!empty($masonry_item_sizing)) ? $masonry_item_sizing : 'portfolio-thumb';
+								if($masonry_sizing_type == 'photography' && !empty($masonry_item_sizing)) {
+									$thumb_size = $thumb_size.'_photography';
+
+									//no tall size in photography
+									if($thumb_size == 'tall_photography') $thumb_size = 'wide_tall_photography';
+								}
+
+								$parallax_images = get_post_meta($post->ID, '_nectar_3d_parallax_images', true); 
+
+								if(!empty($parallax_images)) {
+
+									echo '<div class="parallaxImg">';
+
+									$images = explode( ',', $parallax_images);
+									$i = 0;
+									foreach ( $images as $attach_id ) {
+										$i++;
+
+										$img = wp_get_attachment_image_src(  $attach_id, $thumb_size );
+										//add one sizer img
+										if($i == 1) echo '<img class="sizer" src="'.$img[0].'" alt="'.get_the_title().'" />';
+    									echo '<div class="parallaxImg-layer" data-img="'.$img[0].'" Layer-'.$i.'"></div>';
+
+									}
+
+									echo '</div>';
+
+								} 
+								//no parallax images set
+								else {
+									if ( has_post_thumbnail() ) {
+
+										$thumbnail_id = get_post_thumbnail_id($post->ID);
+										$thumbnail_url = wp_get_attachment_image_src($thumbnail_id,$thumb_size); 
+
+										echo '<img class="sizer" src="'.$thumbnail_url[0].'" alt="'.get_the_title().'" />';
+
+										echo '<div class="parallaxImg">';
+										echo '<div class="parallaxImg-layer" data-img="'.$thumbnail_url[0].'"></div>';
+										echo '<div class="parallaxImg-layer"><div class="bg-overlay"></div> <div class="work-meta"><div class="inner">';
+										echo '	<h4 class="title"> '.get_the_title().'</h4>';
+													
+												if(!empty($project_excerpt)) echo '<p>'.$project_excerpt.'</p>';  
+												elseif(!empty($options['portfolio_date']) && $options['portfolio_date'] == 1) echo '<p>' . get_the_date() . '</p>'; 
+													
+										echo '</div></div></div></div>';
+									} 
+									
+									//no image added
+									else {
+										switch($thumb_size) {
+											case 'wide_photography':
+												$no_image_size = 'no-portfolio-item-photography-wide.jpg';
+												break;
+											case 'regular_photography':
+												$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+												break;
+											case 'wide_tall_photography':
+												$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+												break;
+											case 'wide':
+												$no_image_size = 'no-portfolio-item-wide.jpg';
+												break;
+											case 'tall':
+												$no_image_size = 'no-portfolio-item-tall.jpg';
+												break;
+											case 'regular':
+												$no_image_size = 'no-portfolio-item-tiny.jpg';
+												break;
+											case 'wide_tall':
+												$no_image_size = 'no-portfolio-item-tiny.jpg';
+												break;
+											default:
+												$no_image_size = 'no-portfolio-item-small.jpg';
+												break;
+										}
+										
+
+										echo '<img class="sizer" src="'.get_template_directory_uri().'/img/'.$no_image_size.'" alt="'.get_the_title().'" />';
+
+										echo '<div class="parallaxImg">';
+										echo '<div class="parallaxImg-layer" data-img="'.get_template_directory_uri().'/img/'.$no_image_size.'" "></div>';
+										echo '<div class="parallaxImg-layer"><div class="bg-overlay"></div> <div class="work-meta"><div class="inner">';
+										echo '	<h4 class="title"> '.get_the_title().'</h4>';
+													
+												if(!empty($project_excerpt)) echo '<p>'.$project_excerpt.'</p>';  
+												elseif(!empty($options['portfolio_date']) && $options['portfolio_date'] == 1) echo '<p>' . get_the_date() . '</p>'; 
+													
+										echo '</div></div></div></div>';
+
+									 }   
+								}
+
+								if($lightbox_only != 'true') { ?>
+											
+									<a href="<?php echo $the_project_link; ?>"></a>
+								
+								<?php } else {
+									 
+									$featured_image = wp_get_attachment_image_src( get_post_thumbnail_id(), 'full' );  							
+									$video_embed = get_post_meta($post->ID, '_nectar_video_embed', true);
+									$video_m4v = get_post_meta($post->ID, '_nectar_video_m4v', true);
+									
+									//video 
+								    if( !empty($video_embed) || !empty($video_m4v) ) {
+		
+									    echo nectar_portfolio_video_popup_link($post, $project_style, $video_embed, $video_m4v);
+			
+							        } else { ?>
+							        	
+							        	<a href="<?php echo $featured_image[0]; ?>"  <?php if(!empty($project_image_caption)) echo ' title="'.$project_image_caption.'" '; ?> class="pretty_photo"></a>
+							        	
+							        <?php  }
+
+								   }
+									
+								?>
+
+							
+							</div><!--work-item-->
+
 						
-						
+							
+						<?php } //project style 6 
+
+
+
+						//project style 7
+						else if($project_style == '7') { 
+
+							$using_custom_content = get_post_meta($post->ID, '_nectar_portfolio_custom_grid_item', true); 
+							$custom_content = get_post_meta($post->ID, '_nectar_portfolio_custom_grid_item_content', true); ?>
+							
+							<div class="work-item style-2" data-custom-content="<?php echo $using_custom_content; ?>">
+								
+								<?php
+								$thumb_size = (!empty($masonry_item_sizing)) ? $masonry_item_sizing : 'portfolio-thumb';
+								if($masonry_sizing_type == 'photography' && !empty($masonry_item_sizing)) {
+									$thumb_size = $thumb_size.'_photography';
+
+									//no tall size in photography
+									if($thumb_size == 'tall_photography') $thumb_size = 'wide_tall_photography';
+								}
+
+								//custom thumbnail
+								$custom_thumbnail = get_post_meta($post->ID, '_nectar_portfolio_custom_thumbnail', true); 
+								
+								if( !empty($custom_thumbnail) ){
+									echo '<img class="custom-thumbnail" src="'.nectar_ssl_check($custom_thumbnail).'" alt="'. get_the_title() .'" />';
+								}
+								else {
+									
+									if ( has_post_thumbnail() ) {
+										 echo get_the_post_thumbnail($post->ID, $thumb_size, array('title' => '')); 
+									} 
+									
+									//no image added
+									else {
+										switch($thumb_size) {
+											case 'wide_photography':
+												$no_image_size = 'no-portfolio-item-photography-wide.jpg';
+												break;
+											case 'regular_photography':
+												$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+												break;
+											case 'wide_tall_photography':
+												$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+												break;
+											case 'wide':
+												$no_image_size = 'no-portfolio-item-wide.jpg';
+												break;
+											case 'tall':
+												$no_image_size = 'no-portfolio-item-tall.jpg';
+												break;
+											case 'regular':
+												$no_image_size = 'no-portfolio-item-tiny.jpg';
+												break;
+											case 'wide_tall':
+												$no_image_size = 'no-portfolio-item-tiny.jpg';
+												break;
+											default:
+												$no_image_size = 'no-portfolio-item-small.jpg';
+												break;
+										}
+										 echo '<img src="'.get_template_directory_uri().'/img/'.$no_image_size.'" alt="no image added yet." />';
+									 }   
+									
+								} ?>
+				
+								<div class="work-info-bg"></div>
+								<div class="work-info">
+									
+									<?php
+									//custom content
+									if($using_custom_content == 'on') {
+										if(!empty($custom_project_link)) echo '<a href="'.$the_project_link.'"></a>';
+									//default
+									} else { ?>
+
+										
+										<?php if($lightbox_only != 'true') { ?>
+											
+											<a href="<?php echo $the_project_link; ?>"></a>
+										
+										<?php } else {
+											 
+											$featured_image = wp_get_attachment_image_src( get_post_thumbnail_id(), 'full' );  							
+											$video_embed = get_post_meta($post->ID, '_nectar_video_embed', true);
+											$video_m4v = get_post_meta($post->ID, '_nectar_video_m4v', true);
+											
+											//video 
+										    if( !empty($video_embed) || !empty($video_m4v) ) {
+				
+											    echo nectar_portfolio_video_popup_link($post, $project_style, $video_embed, $video_m4v);
 					
+									        } else { ?>
+									        	
+									        	<a href="<?php echo $featured_image[0]; ?>" <?php if(!empty($project_image_caption)) echo ' title="'.$project_image_caption.'" '; ?> class="pretty_photo"></a>
+									        	
+									        <?php  } 
+
+											  }
+
+										 } ?>
+									
+		
+									<div class="vert-center">
+										<?php 
+										if(!empty($using_custom_content) && $using_custom_content == 'on') {
+											echo '<div class="custom-content">' . do_shortcode($custom_content) . '</div>';
+										} else { ?>	
+											<h3><?php echo get_the_title(); ?></h3> 
+											<?php if(!empty($project_excerpt)) { echo '<p>'.$project_excerpt.'</p>'; } elseif(!empty($options['portfolio_date']) && $options['portfolio_date'] == 1) echo '<p>' . get_the_date() . '</p>'; 
+										} ?>
+									</div><!--/vert-center-->
+									
+								</div>
+							</div><!--work-item-->
+							
+						<?php } //project style 7 
+
+
+
+						//project style 8
+						else if($project_style == '8') { 
+
+							$using_custom_content = get_post_meta($post->ID, '_nectar_portfolio_custom_grid_item', true); 
+							$custom_content = get_post_meta($post->ID, '_nectar_portfolio_custom_grid_item_content', true); ?>
+							
+							<div class="work-item style-2" data-custom-content="<?php echo $using_custom_content; ?>">
+								
+								<?php
+								$thumb_size = (!empty($masonry_item_sizing)) ? $masonry_item_sizing : 'portfolio-thumb';
+								if($masonry_sizing_type == 'photography' && !empty($masonry_item_sizing)) {
+									$thumb_size = $thumb_size.'_photography';
+
+									//no tall size in photography
+									if($thumb_size == 'tall_photography') $thumb_size = 'wide_tall_photography';
+								}
+
+								//custom thumbnail
+								$custom_thumbnail = get_post_meta($post->ID, '_nectar_portfolio_custom_thumbnail', true); 
+								
+								if( !empty($custom_thumbnail) ){
+									echo '<img class="custom-thumbnail" src="'.nectar_ssl_check($custom_thumbnail).'" alt="'. get_the_title() .'" />';
+								}
+								else {
+									
+									if ( has_post_thumbnail() ) {
+										 echo get_the_post_thumbnail($post->ID, $thumb_size, array('title' => '')); 
+									} 
+									
+									//no image added
+									else {
+										switch($thumb_size) {
+											case 'wide_photography':
+												$no_image_size = 'no-portfolio-item-photography-wide.jpg';
+												break;
+											case 'regular_photography':
+												$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+												break;
+											case 'wide_tall_photography':
+												$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+												break;
+											case 'wide':
+												$no_image_size = 'no-portfolio-item-wide.jpg';
+												break;
+											case 'tall':
+												$no_image_size = 'no-portfolio-item-tall.jpg';
+												break;
+											case 'regular':
+												$no_image_size = 'no-portfolio-item-tiny.jpg';
+												break;
+											case 'wide_tall':
+												$no_image_size = 'no-portfolio-item-tiny.jpg';
+												break;
+											default:
+												$no_image_size = 'no-portfolio-item-small.jpg';
+												break;
+										}
+										 echo '<img src="'.get_template_directory_uri().'/img/'.$no_image_size.'" alt="no image added yet." />';
+									 }   
+									
+								} ?>
+				
+								<div class="work-info-bg"></div>
+								<div class="work-info">
+									
+									<?php
+									//custom content
+									if($using_custom_content == 'on') {
+										if(!empty($custom_project_link)) echo '<a href="'.$the_project_link.'"></a>';
+									//default
+									} else { ?>
+
+										
+										<?php if($lightbox_only != 'true') { ?>
+											
+											<a href="<?php echo $the_project_link; ?>"></a>
+										
+										<?php } else {
+											 
+											$featured_image = wp_get_attachment_image_src( get_post_thumbnail_id(), 'full' );  							
+											$video_embed = get_post_meta($post->ID, '_nectar_video_embed', true);
+											$video_m4v = get_post_meta($post->ID, '_nectar_video_m4v', true);
+											
+											//video 
+										    if( !empty($video_embed) || !empty($video_m4v) ) {
+				
+											    echo nectar_portfolio_video_popup_link($post, $project_style, $video_embed, $video_m4v);
+					
+									        } else { ?>
+									        	
+									        	<a href="<?php echo $featured_image[0]; ?>" <?php if(!empty($project_image_caption)) echo ' title="'.$project_image_caption.'" '; ?> class="pretty_photo"></a>
+									        	
+									        <?php  } 
+
+											  }
+
+										 } ?>
+									
+		
+									<div class="vert-center">
+										<?php 
+										if(!empty($using_custom_content) && $using_custom_content == 'on') {
+											echo '<div class="custom-content">' . do_shortcode($custom_content) . '</div>';
+										} else { ?>	
+											
+											<?php if(!empty($project_excerpt)) { echo '<p>'.$project_excerpt.'</p>'; } elseif(!empty($options['portfolio_date']) && $options['portfolio_date'] == 1) echo '<p>' . get_the_date() . '</p>'; ?>
+											<h3><?php echo get_the_title(); ?></h3> 
+
+											<svg class="next-arrow" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 39 12"><line class="top" x1="23" y1="-0.5" x2="29.5" y2="6.5" stroke="#ffffff;"/><line class="bottom" x1="23" y1="12.5" x2="29.5" y2="5.5" stroke="#ffffff;"/></svg><span class="line"></span></span>
+
+										<?php } ?>
+									</div><!--/vert-center-->
+									
+								</div>
+							</div><!--work-item-->
+							
+						<?php } //project style 8 
+						
+						else if($project_style == '9') { 
+
+						$using_custom_content = get_post_meta($post->ID, '_nectar_portfolio_custom_grid_item', true); 
+						$custom_content = get_post_meta($post->ID, '_nectar_portfolio_custom_grid_item_content', true); ?>
+							
+						<div class="work-item style-1" data-custom-content="<?php echo $using_custom_content; ?>">
+							 
+							<?php
+							
+							$thumb_size = (!empty($masonry_item_sizing)) ? $masonry_item_sizing : 'portfolio-thumb';
+							if($masonry_sizing_type == 'photography' && !empty($masonry_item_sizing)) {
+								$thumb_size = $thumb_size.'_photography';
+
+								//no tall size in photography
+								if($thumb_size == 'tall_photography') $thumb_size = 'wide_tall_photography';
+							}
+
+							//custom thumbnail
+							$custom_thumbnail = get_post_meta($post->ID, '_nectar_portfolio_custom_thumbnail', true); 
+							
+							if( !empty($custom_thumbnail) ){
+								
+							 $image_srcset = '';
+							 $custom_thumbnail_id = fjarrett_get_attachment_id_from_url($custom_thumbnail); 
+	
+								if(!is_null($custom_thumbnail_id) && !empty($custom_thumbnail_id)) {
+
+										if (function_exists('wp_get_attachment_image_srcset')) {
+								
+												$image_srcset_values = wp_get_attachment_image_srcset( $custom_thumbnail_id, 'full');
+												if($image_srcset_values) {
+													$image_srcset .= 'srcset="' . $image_srcset_values . '" ';
+												}
+										}
+									
+								}
+				
+								echo '<img class="custom-thumbnail" src="'.nectar_ssl_check($custom_thumbnail).'" '. $image_srcset. $image_sizes .' alt="'. get_the_title() .'" />';
+							
+							}
+							
+							else {
+								
+								if ( has_post_thumbnail() ) {
+
+									//create featured image with srcset
+									$image_width = null;
+									$image_height = null;
+
+									if(!empty($image_meta['sizes']) && !empty($image_meta['sizes'][$thumb_size])) $image_width = $image_meta['sizes'][$thumb_size]['width'];
+									if(!empty($image_meta['sizes']) && !empty($image_meta['sizes'][$thumb_size])) $image_height = $image_meta['sizes'][$thumb_size]['height'];
+
+									$wp_img_alt_tag = get_post_meta( $featured_ID, '_wp_attachment_image_alt', true );
+
+									$image_src = null;
+									$image_src = wp_get_attachment_image_src( $featured_ID, $thumb_size);
+									if(!empty($image_src)) $image_src = $image_src[0];
+
+											$project_featured_img = '<img class="size-'.$masonry_item_sizing.'" src="'.$image_src.'" alt="'.$wp_img_alt_tag.'" height="'.$image_height.'" width="'.$image_width.'" ' .$image_srcset.' '.$image_sizes.' />';
+
+									echo $project_featured_img;
+								} 
+								//no image added
+								else {
+									switch($thumb_size) {
+										case 'wide_photography':
+											$no_image_size = 'no-portfolio-item-photography-wide.jpg';
+											break;
+										case 'regular_photography':
+											$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+											break;
+										case 'wide_tall_photography':
+											$no_image_size = 'no-portfolio-item-photography-regular.jpg';
+											break;
+										case 'wide':
+											$no_image_size = 'no-portfolio-item-wide.jpg';
+											break;
+										case 'tall':
+											$no_image_size = 'no-portfolio-item-tall.jpg';
+											break;
+										case 'regular':
+											$no_image_size = 'no-portfolio-item-tiny.jpg';
+											break;
+										case 'wide_tall':
+											$no_image_size = 'no-portfolio-item-tiny.jpg';
+											break;
+										default:
+											$no_image_size = 'no-portfolio-item-small.jpg';
+											break;
+									}
+									 echo '<img src="'.get_template_directory_uri().'/img/'.$no_image_size.'" alt="no image added yet." />';
+								 }   
+								
+							} ?>
+							
+
+							<div class="work-info"> 
+								
+							
+								<?php if($lightbox_only != 'true') { ?>
+									
+									<a href="<?php echo $the_project_link; ?>"></a>
+								
+								<?php } else {
+									 
+									$featured_image = wp_get_attachment_image_src( get_post_thumbnail_id(), 'full' );  							
+									$video_embed = get_post_meta($post->ID, '_nectar_video_embed', true);
+									$video_m4v = get_post_meta($post->ID, '_nectar_video_m4v', true);
+									
+									//video 
+										if( !empty($video_embed) || !empty($video_m4v) ) {
+		
+											echo nectar_portfolio_video_popup_link($post, $project_style, $video_embed, $video_m4v);	 
+											 
+			
+										} else { ?>
+												
+												<a href="<?php echo $featured_image[0]; ?>" <?php if(!empty($project_image_caption)) echo ' title="'.$project_image_caption.'" '; ?> class="pretty_photo"></a>
+												
+										<?php  } 
+
+
+								 } ?>
+											
+			
+							</div>
+								
+							</div><!--work-item-->
+							
+							<div class="work-meta">
+								<h4 class="title"><?php the_title(); ?></h4>
+								
+								<?php if(!empty($project_excerpt)) { echo '<p>'.$project_excerpt.'</p>'; } elseif(!empty($options['portfolio_date']) && $options['portfolio_date'] == 1) echo '<p>' . get_the_date() . '</p>'; ?>
+								
+							</div>
+
+					
+					<?php } //project style 9  ?>
+
+						
+						
+					</div><!--inner-->
 					</div><!--/col-->
 					
 				<?php endwhile; endif; ?>

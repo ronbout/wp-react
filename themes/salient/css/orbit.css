@@ -163,7 +163,7 @@ div.slider-nav span.right span.shadow { background-position: right bottom; }
 	left: -10px;
 	position: relative;
 	margin-top: 20px;
-	font-family: 'OpenSansLight';
+    font-weight: 300;
 }
 
 #featured article .post-title h2 span {

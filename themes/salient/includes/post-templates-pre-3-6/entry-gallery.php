@@ -6,7 +6,7 @@
 				
 			<div class="post-meta">
 				
-				<?php $options = get_option('salient'); 
+				<?php $options = get_nectar_theme_options(); 
 				$blog_type = $options['blog_type']; ?>
 				
 				<div class="date">
@@ -17,7 +17,7 @@
 					
 						<span class="month"><?php the_time('M'); ?></span>
 						<span class="day"><?php the_time('d'); ?></span>
-						<?php $options = get_option('salient'); 
+						<?php global $options; 
 						if(!empty($options['display_full_date']) && $options['display_full_date'] == 1) {
 							echo '<span class="year">'. get_the_time('Y') .'</span>';
 						}
@@ -35,13 +35,9 @@
 		<div class="content-inner">
 			
 			<?php 
-				if(MultiPostThumbnails::has_post_thumbnail(get_post_type(), 'second-slide')) {
-					nectar_gallery($post->ID);
-				}
 				
-				else {
-					if ( has_post_thumbnail() ) { echo get_the_post_thumbnail($post->ID, 'full', array('title' => '')); }
-				}
+				if ( has_post_thumbnail() ) { echo get_the_post_thumbnail($post->ID, 'full', array('title' => '')); }
+				
 			?>
 			
 			<?php if( !is_single() ) { ?>
@@ -79,7 +75,7 @@
 				the_content('<span class="continue-reading">'. __("Read More", NECTAR_THEME_NAME) . '</span>'); 
 			} ?>
 			
-			<?php $options = get_option('salient');
+			<?php global $options;
 				if( $options['display_tags'] == true ){
 					 
 					if( is_single() && has_tag() ) {

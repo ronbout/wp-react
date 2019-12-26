@@ -1,5 +1,7 @@
 <?php
-
+	
+	defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
+	
     add_action( 'init', 'myprefix_autocomplete_init' );  
     function myprefix_autocomplete_init() {  
         // Register our jQuery UI style and our custom javascript file  
@@ -19,17 +21,14 @@
 	function myprefix_autocomplete_search_form(){  
         wp_enqueue_script( 'my_acsearch' );  
     }  
-	
-	add_action( 'wp_ajax_{action}', 'my_hooked_function' );  
-	add_action( 'wp_ajax_nopriv_{action}', 'my_hooked_function' );
-	
+		
 	
 	function myprefix_autocomplete_suggestions(){  
 
-		$search_term = $_REQUEST['term'];
+		$search_term = sanitize_text_field( $_REQUEST['term'] );
 		$search_term = apply_filters('get_search_query', $search_term);
 		
-		$options = get_option('salient'); 
+		$options = get_nectar_theme_options(); 
 		$show_postsnum = (!empty($options['theme-skin']) && $options['theme-skin'] == 'ascend') ? 3 : 6;
 
         $search_array = array(

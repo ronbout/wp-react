@@ -65,16 +65,7 @@ jQuery(document).ready(function($){
 	    });
 	}
   
-  
-  
-  
-    $('input.popup-colorpicker').wpColorPicker({
-    	palettes: ['#27CCC0', '#78cd6e', '#29c1e7', '#ae81f9', '#f78224', '#FF4629']
-    });
-  
-  
-  
-  	
+
             		
   function calcPercent() {
   	var $output = $("<span>");
@@ -89,10 +80,8 @@ jQuery(document).ready(function($){
   calcPercent();
 
 
-	//The chosen one
-	$("select#nectar-shortcodes").chosen();
    
-    $('#shortcode-content textarea').val('');
+  $('#shortcode-content textarea').val('');
     
     function dynamic_items(){
    	
@@ -293,8 +282,11 @@ jQuery(document).ready(function($){
 		
 		
 		//color loop for extra attrs
-		$('#options-'+name+':not([data-name="button"]) input.popup-colorpicker').each(function(){
+		$('#options-'+name+':not([data-name="button"]) input.popup-colorpicker:not(.simple)').each(function(){
 			 code += ' background_color="'+ $(this).val()+'"'; 
+		});
+		$('#options-'+name+':not([data-name="button"]) input.popup-colorpicker.simple').each(function(){
+			 code += ' color="'+ $(this).val()+'"'; 
 		});
 		$('#options-'+name+'[data-name="button"] input.popup-colorpicker').each(function(){
 			if($(this).parents('.content').prev('.label').find('strong').text() == 'Hover BG Color:'){
@@ -312,7 +304,12 @@ jQuery(document).ready(function($){
 		if(name == 'icon' && $('.icon-option i.selected').is('[data-svg-val]')) {  //svg icons
 			if(name == 'icon' && $('.icon-option i.selected').length > 0 || name == 'button' && $('.icon-option i.selected').length > 0) code += ' image="'+ $('.icon-option i.selected').attr('data-svg-val') +'"';  
 		} else { //standard icons
-			if(name == 'icon' && $('.icon-option i.selected').length > 0 || name == 'button' && $('.icon-option i.selected').length > 0) code += ' image="'+ $('.icon-option i.selected').attr('class').split(' ')[0] +'"'; 
+			if(name == 'icon' && $('.icon-option i.selected').length > 0 || name == 'button' && $('.icon-option i.selected').length > 0) { 
+				if($('.icon-option i.selected').attr('class').split(' ')[0] == 'fa')
+					code += ' image="'+ $('.icon-option i.selected').attr('class').split(' ')[1] +'"'; 
+				else 
+					code += ' image="'+ $('.icon-option i.selected').attr('class').split(' ')[0] +'"'; 
+			}
 		}
 		code += ']';
 
@@ -324,7 +321,7 @@ jQuery(document).ready(function($){
 	 }
      
 	//events
-    $('#add-shortcode').click(function(){
+  $('#add-shortcode').click(function(){
     	
     	//column animation check (don't add the attrs when unnecessary)
     	var name = $('#nectar-shortcodes').val();
@@ -398,11 +395,11 @@ jQuery(document).ready(function($){
     	
     	//init ss if it's a bar graph
     	if( $clone.find('.percent').length > 0 ) {
-    		$($clone).find('.slider, .output').remove();
+    		/*$($clone).find('.slider, .output').remove();
     		$($clone).find('.percent').simpleSlider({
     			range: [1,100],
     			step: '1'
-    		});
+    		});*/
     	}
     	
     	//init new upload button and clear image if it's an upload
@@ -436,7 +433,7 @@ jQuery(document).ready(function($){
     //hide remove btn to start
     $('.remove-list-item').hide();
 	
-    $('body').on('keyup','.shortcode-dynamic-item-input, .shortcode-dynamic-item-text', function(){ dynamic_items(); });
+  $('body').on('keyup','.shortcode-dynamic-item-input, .shortcode-dynamic-item-text', function(){ dynamic_items(); });
 	$("body").on("input propertychange", '.shortcode-dynamic-item textarea', function(){ dynamic_items(); });
 	
 	//icon selection
@@ -468,6 +465,7 @@ jQuery(document).ready(function($){
 				$('#options-icon input[data-attrname="animation_delay"], #options-icon select#animation_speed').parent().next('.clear').slideDown();
 				$('#options-icon input[data-attrname="animation_delay"], #options-icon select#animation_speed').parent().prev('.label').slideDown();
 			}
+			$('#options-icon #color').trigger('change');
 		} else {
 			$('label[for="shortcode-option-icon-size-regular"]').parent().slideDown();
 			$('label[for="shortcode-option-icon-size-regular"]').parent().prev('.label').slideDown();
@@ -482,7 +480,8 @@ jQuery(document).ready(function($){
 		
 		}
 	});
-	$('select[name="icon-set-select"]').trigger('change');
+  //moved to nectar-shortcode-generator.js
+	//$('select[name="icon-set-select"]').trigger('change');
 
 	//animation delay relation
 	$('#options-icon input.enable_animation').change(function(){
@@ -497,6 +496,25 @@ jQuery(document).ready(function($){
 		}
 	});
 	
+	//color change
+	$('#options-icon #color').change(function(){
+		if($(this).val() == 'Extra-Color-Gradient-1' || $(this).val() == 'Extra-Color-Gradient-2' || $('select[name="icon-set-select"]').val() != 'linea') {
+			$('#options-icon #enable_animation').prop('checked', false);
+			$('#options-icon label[for="enable_animation"]').parent().slideUp();
+			$('#options-icon label[for="enable_animation"]').parent().next().slideUp();
+			$('#options-icon label[for="enable_animation"]').parent().next().next().slideUp();
+			$('#options-icon input.enable_animation').trigger('change');
+			$('#options-icon select#animation_speed, #options-icon input[data-attrname="animation_delay"]').addClass('skip-processing');
+		} else {
+			$('#options-icon label[for="enable_animation"]').parent().slideDown();
+			$('#options-icon label[for="enable_animation"]').parent().next().slideDown();
+			$('#options-icon label[for="enable_animation"]').parent().next().next().slideDown();
+			$('#options-icon select#animation_speed, #options-icon input[data-attrname="animation_delay"]').removeClass('skip-processing');
+		}
+	});
+  //moved to nectar-shortcode-generator.js
+	//$('#options-icon #color').trigger('change');
+
 	//starting category population
 	$('.starting_category').hide();
 	$('.starting_category').next('.clear').hide();
@@ -542,12 +560,48 @@ jQuery(document).ready(function($){
 					$(this).parents('.content').prev('.label').show();
 					$(this).parents('.content').next('.clear').show();
 				} 
+
+				if($(this).parents('.content').prev('.label').find('strong').text() == 'Color Override:') {
+					$(this).parents('.content').show();
+					$(this).parents('.content').prev('.label').show();
+					$(this).parents('.content').next('.clear').show();
+				} 
 				
 				$('#hover_text_color_override').parents('.content').show();
 				$('#hover_text_color_override').parents('.content').prev('.label').show();
 				$('#hover_text_color_override').parents('.content').next('.clear').show();
+
+				$('#options-button [name="icon-set-select"]').parents('.content').show();
+				$('#options-button [name="icon-set-select"]').parents('.content').prev('.label').show();
+				$('#options-button [name="icon-set-select"]').parents('.content').next('.clear').show();
 				
 			});
+		} else if ($selected_style == 'extra-color-gradient-1' || $selected_style == 'extra-color-gradient-2' || $selected_style == 'see-through-extra-color-gradient-1' || $selected_style == 'see-through-extra-color-gradient-2') {
+
+			$('#options-button input.popup-colorpicker').each(function(){
+				
+				if($(this).parents('.content').prev('.label').find('strong').text() == 'Hover BG Color:') {
+					$(this).parents('.content').hide();
+					$(this).parents('.content').prev('.label').hide();
+					$(this).parents('.content').next('.clear').hide();
+				} 
+
+				if($(this).parents('.content').prev('.label').find('strong').text() == 'Color Override:') {
+					$(this).parents('.content').hide();
+					$(this).parents('.content').prev('.label').hide();
+					$(this).parents('.content').next('.clear').hide();
+				} 
+
+			});
+
+			$('#hover_text_color_override').parents('.content').hide();
+			$('#hover_text_color_override').parents('.content').prev('.label').hide();
+			$('#hover_text_color_override').parents('.content').next('.clear').hide();
+
+			//$('#options-button [name="icon-set-select"]').parents('.content').hide();
+			//$('#options-button [name="icon-set-select"]').parents('.content').prev('.label').hide();
+			//$('#options-button [name="icon-set-select"]').parents('.content').next('.clear').hide();
+
 		} else {
 			$('#options-button input.popup-colorpicker').each(function(){
 				
@@ -556,16 +610,27 @@ jQuery(document).ready(function($){
 					$(this).parents('.content').prev('.label').hide();
 					$(this).parents('.content').next('.clear').hide();
 				} 
+
+				if($(this).parents('.content').prev('.label').find('strong').text() == 'Color Override:') {
+					$(this).parents('.content').show();
+					$(this).parents('.content').prev('.label').show();
+					$(this).parents('.content').next('.clear').show();
+				} 
 				
 				$('#hover_text_color_override').parents('.content').hide();
 				$('#hover_text_color_override').parents('.content').prev('.label').hide();
 				$('#hover_text_color_override').parents('.content').next('.clear').hide();
+
+				//$('#options-button [name="icon-set-select"]').parents('.content').show();
+				//$('#options-button [name="icon-set-select"]').parents('.content').prev('.label').show();
+				//$('#options-button [name="icon-set-select"]').parents('.content').next('.clear').show();
 				
 			});
 		}
 	});
 	
-	$('#options-button #color').trigger('change');
+  //moved to nectar-shortcode-generator.js
+	//$('#options-button #color').trigger('change');
 	
 	
 	function resetFileds(){

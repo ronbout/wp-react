@@ -25,7 +25,7 @@ $fullwidth_tabs = (!empty($options['product_tab_position']) && $options['product
 
 if ( ! empty( $tabs ) ) : ?>
 
-	<div class="woocommerce-tabs <?php if($fullwidth_tabs == true) echo 'full-width-tabs'; ?>">
+	<div class="woocommerce-tabs wc-tabs-wrapper <?php if($fullwidth_tabs == true) echo 'full-width-tabs'; ?>">
 
 		<?php if($fullwidth_tabs == true) echo '<div class="full-width-content"> <div class="tab-container container">'; ?>
 

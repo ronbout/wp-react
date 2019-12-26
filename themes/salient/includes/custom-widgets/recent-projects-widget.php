@@ -1,5 +1,10 @@
 <?php
 
+if ( !defined( 'ABSPATH') ) {
+	exit('Direct script access denied.');
+}
+
+
 function pn_get_attachment_id_from_url( $attachment_url = '' ) {
  
 	global $wpdb;
@@ -39,9 +44,9 @@ add_action('widgets_init', 'Recent_Projects_init');
 
 class Recent_Projects_Widget extends WP_Widget {
 
-	function Recent_Projects_Widget() {
+	function __construct() {
 		$widget_ops = array('classname' => 'recent_projects_widget', 'description' => __( "The most recent projects on your site.",NECTAR_THEME_NAME));
-		$this->WP_Widget('recent-projects', __('Recent Projects',NECTAR_THEME_NAME), $widget_ops);
+		parent::__construct('recent-projects', __('Recent Projects',NECTAR_THEME_NAME), $widget_ops);
 		$this->alt_option_name = 'recent_projects_widget';
 
 		add_action( 'save_post', array(&$this, 'flush_widget_cache') );

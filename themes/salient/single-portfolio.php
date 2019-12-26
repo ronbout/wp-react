@@ -10,16 +10,24 @@ global $post;
 
 $bg = get_post_meta($post->ID, '_nectar_header_bg', true);
 $bg_color = get_post_meta($post->ID, '_nectar_header_bg_color', true);
-			
+$bg_type = get_post_meta($post->ID, '_nectar_slider_bg_type', true); 
+if(empty($bg_type)) $bg_type = 'image_bg'; 
+
 $featured_src =  (has_post_thumbnail( $post->ID )) ? wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'full') : array('empty') ;
 $full_width_portfolio = (!empty($fwp) && $fwp == 'enabled') ? 'id="full_width_portfolio" data-featured-img="'. $featured_src[0] .'"' : 'data-featured-img="'. $featured_src[0] .'"';
+
+$options = get_nectar_theme_options(); 
+$single_nav_pos = (!empty($options['portfolio_single_nav'])) ? $options['portfolio_single_nav'] : 'in_header';
+$subtitle = get_post_meta($post->ID, '_nectar_header_subtitle', true);
+
+$project_social_style = (!empty($options['portfolio_social_style'])) ? $options['portfolio_social_style'] : 'default';
 
 ?>
 <div <?php echo $full_width_portfolio; if(!empty($bg) && $fwp != 'enabled' || !empty($bg_color) && $fwp != 'enabled') echo ' data-project-header-bg="true"'?> >
 	  		
 	  		<?php nectar_page_header($post->ID); 
 			
-			if(empty($bg) && empty($bg_color)) {?>
+			if(empty($bg) && empty($bg_color) && $bg_type != 'video_bg') {?>
 	  		
 				<div class="row project-title">
 					<div class="container">
@@ -27,112 +35,9 @@ $full_width_portfolio = (!empty($fwp) && $fwp == 'enabled') ? 'id="full_width_po
 						<div class="col span_12 section-title <?php if(empty($options['portfolio_social']) || $options['portfolio_social'] == 0 || empty($options['portfolio_date']) || $options['portfolio_date'] == 0 ) echo 'no-date'?>">
 							
 							<h1><?php the_title(); ?></h1>
-							
-							<?php 
-							$options = get_option('salient'); 
-							
-							$back_to_all_override = get_post_meta($post->ID, 'nectar-metabox-portfolio-parent-override', true);
-							if(empty($back_to_all_override)) $back_to_all_override = 'default';
-							
-							//attempt to find parent portfolio page - if unsuccessful default to main portfolio page
-							global $post;
-							$terms = get_the_terms($post->id,"project-type");
-							$project_cat = null;
-							$portfolio_link = null; 
-							
-						    if(empty($terms)) $terms = array('1' => (object) array('name' => 'nothing', 'slug' => 'none'));
-							
-					     	 foreach ( $terms as $term ) {
-					      	 	$project_cat = strtolower($term->name);
-					     	 }
-							 
-							 $page = get_page_by_title_search($project_cat);
-							 if(empty($page)) $page = array( '0' => (object) array('ID' => 'nothing'));
-							 
-							 $page_link = verify_portfolio_page($page[0]->ID);
-							
-							 //if a page has been found for the category
-							 if(!empty($page_link) && $back_to_all_override == 'default') {
-							 	$portfolio_link = $page_link; 
-		
-							 ?>
-								 
-								 <div id="portfolio-nav">
-								 	<ul>
-								 		<li id="all-items"><a href="<?php echo $portfolio_link; ?>"><i class="icon-salient-back-to-all"></i></a></li>               
-								 	</ul>
-									<ul class="controls">                                 
-										<li id="prev-link"><?php be_next_post_link('%link','<i class="icon-salient-left-arrow-thin"></i>',TRUE, null,'project-type'); ?></li>
-										<li id="next-link"><?php be_previous_post_link('%link','<i class="icon-salient-right-arrow-thin"></i>',TRUE, null, 'project-type'); ?></li> 
-									</ul>
-								</div>
-								 
-						<?php  } 
-							 
-							 //if no category page exists
-							 else {
-		
-							 	$portfolio_link = get_portfolio_page_link(get_the_ID()); 
-								if(!empty($options['main-portfolio-link'])) $portfolio_link = $options['main-portfolio-link']; 
-								
-								if($back_to_all_override != 'default') $portfolio_link = get_page_link($back_to_all_override); 
+							<?php if(!empty($subtitle)) { ?> <span class="subheader"><?php echo $subtitle; ?></span> <?php } ?>
 
-									
-								?>
-								<div id="portfolio-nav">
-									<ul>
-										<li id="all-items"><a href="<?php echo $portfolio_link; ?>"><i class="icon-salient-back-to-all"></i></a></li>  
-									</ul>
-
-									<ul class="controls">    
-										<?php 
-										if(!empty($options['portfolio_same_category_single_nav']) && $options['portfolio_same_category_single_nav'] == '1') { 
-
-											// get_posts in same custom taxonomy
-											$terms = get_the_terms($post->id,"project-type");
-											$project_cat = null;
-											
-										    if(empty($terms)) $terms = array('1' => (object) array('name' => 'nothing', 'slug' => 'none'));
-											
-									     	foreach ( $terms as $term ) {
-									      	 	$project_cat = strtolower($term->slug);
-									     	}
-
-											$postlist_args = array(
-											   'posts_per_page'  => -1,
-											   'orderby'         => 'menu_order title',
-											   'order'           => 'ASC',
-											   'post_type'       => 'portfolio',
-											   'project-type' => $project_cat
-											); 
-											$postlist = get_posts( $postlist_args );
-
-											// get ids of posts retrieved from get_posts
-											$ids = array();
-											foreach ($postlist as $thepost) {
-											   $ids[] = $thepost->ID;
-											}
-
-											// get and echo previous and next post in the same taxonomy        
-											$thisindex = array_search($post->ID, $ids);
-											
-											$previd = (isset($ids[$thisindex-1])) ? $ids[$thisindex-1] : null;
-											$nextid = (isset($ids[$thisindex+1])) ? $ids[$thisindex+1] : null;
-											if ( !empty($previd) ) {
-											   echo '<li id="prev-link" class="from-sing"><a href="' . get_permalink($previd). '"><i class="icon-salient-left-arrow-thin"></i></a></li>';
-											}
-											if ( !empty($nextid) ) {
-											   echo '<li id="next-link" class="from-sing"><a href="' . get_permalink($nextid). '"><i class="icon-salient-right-arrow-thin"></i></a></li>';
-											} 
-
-											
-										} else { ?>
-											<li id="prev-link"><?php next_post_link('%link','<i class="icon-salient-left-arrow-thin"></i>'); ?></li>
-											<li id="next-link"><?php previous_post_link('%link','<i class="icon-salient-right-arrow-thin"></i>'); ?></li> 
-										<?php } ?>                                   
-									</ul>
-								</div>
-						 <?php } ?>
+							<?php if($single_nav_pos == 'in_header') project_single_controls(); ?>
 					 
 						</div> 
 					</div>
@@ -142,7 +47,7 @@ $full_width_portfolio = (!empty($fwp) && $fwp == 'enabled') ? 'id="full_width_po
 			
 		<?php } //project header ?>
 		
-	<div class="container-wrap">
+	<div class="container-wrap" data-nav-pos="<?php echo $single_nav_pos; ?>">
 		
 		<div class="container main-content"> 
 			
@@ -157,7 +62,7 @@ $full_width_portfolio = (!empty($fwp) && $fwp == 'enabled') ? 'id="full_width_po
 					if ( function_exists( 'yoast_breadcrumb' ) ){ yoast_breadcrumb('<p id="breadcrumbs">','</p>'); } 
 				?>
 					
-					<div id="post-area" class="col <?php if($fwp != 'enabled') { echo 'span_9'; } else { echo 'span_12'; } ?>">
+					<div class="post-area col <?php if($fwp != 'enabled') { echo 'span_9'; } else { echo 'span_12'; } ?>">
 						
 						<?php 
 
@@ -173,9 +78,7 @@ $full_width_portfolio = (!empty($fwp) && $fwp == 'enabled') ? 'id="full_width_po
 								if(class_exists('MultiPostThumbnails') && MultiPostThumbnails::has_post_thumbnail(get_post_type(), 'second-slide') || !empty($enable_gallery_slider) && $enable_gallery_slider == 'on'){
 									
 									if ( floatval(get_bloginfo('version')) < "3.6" ) {
-										if(MultiPostThumbnails::has_post_thumbnail(get_post_type(), 'second-slide')) {
-											nectar_gallery($post->ID);
-										}
+
 									}
 									else {
 										
@@ -245,7 +148,7 @@ $full_width_portfolio = (!empty($fwp) && $fwp == 'enabled') ? 'id="full_width_po
 						
 						<?php
 							//extra content 
-							$options = get_option('salient'); 
+							$options = get_nectar_theme_options(); 
 							if(!post_password_required()) {
 								
 								$portfolio_extra_content = get_post_meta($post->ID, '_nectar_portfolio_extra_content', true);
@@ -285,57 +188,57 @@ $full_width_portfolio = (!empty($fwp) && $fwp == 'enabled') ? 'id="full_width_po
 							<div id="project-meta" data-sharing="<?php echo ( !empty($options['portfolio_social']) && $options['portfolio_social'] == 1 ) ? '1' : '0'; ?>">
 
 									
-									<?php if(!empty($options['portfolio_date']) && $options['portfolio_date'] == 1) {
-										   if( empty($options['portfolio_social']) || $options['portfolio_social'] == 0 ) { ?>
-										   	
-										   	<ul class="sharing"> 
-											   	<li><?php echo '<span class="n-shortcode">'.nectar_love('return').'</span>'; ?></li>
-												<li>
-													<?php the_time('F d, Y'); ?>
-												</li>
-											</ul><!--sharing-->
-									
-										<?php } 
-									    
-										}
-									?>
-								
-								
+									<ul class="project-sharing"> 
+
+
 								<?php
 									// portfolio social sharting icons
-									if( !empty($options['portfolio_social']) && $options['portfolio_social'] == 1 ) {
+									if( !empty($options['portfolio_social']) && $options['portfolio_social'] == 1 && $project_social_style != 'fixed_bottom_right') {
 										
-										echo '<div class="nectar-social sharing">';
-										 
-										echo '<span class="n-shortcode">'.nectar_love('return').'</span>';
+										echo '<li class="meta-share-count"><a href="#"><i class="icon-default-style steadysets-icon-share"></i><span class="share-count-total">0</span> <span class="plural">'. __('Shares',NECTAR_THEME_NAME) . '</span> <span class="singular">'. __('Share',NECTAR_THEME_NAME) .'</span></a> <div class="nectar-social">';
+										
 										
 										//facebook
 										if(!empty($options['portfolio-facebook-sharing']) && $options['portfolio-facebook-sharing'] == 1) { 
-											echo "<a class='facebook-share nectar-sharing' href='#' title='".__('Share this', NECTAR_THEME_NAME)."'> <i class='icon-facebook'></i> <span class='count'></span></a>";
+											echo "<a class='facebook-share nectar-sharing' href='#' title='".__('Share this', NECTAR_THEME_NAME)."'> <i class='fa fa-facebook'></i> <span class='count'></span></a>";
 										}
 										//twitter
 										if(!empty($options['portfolio-twitter-sharing']) && $options['portfolio-twitter-sharing'] == 1) {
-											echo "<a class='twitter-share nectar-sharing' href='#' title='".__('Tweet this', NECTAR_THEME_NAME)."'> <i class='icon-twitter'></i> <span class='count'></span></a>";
+											echo "<a class='twitter-share nectar-sharing' href='#' title='".__('Tweet this', NECTAR_THEME_NAME)."'> <i class='fa fa-twitter'></i> <span class='count'></span></a>";
 										}
 										//google plus
 										if(!empty($options['portfolio-google-plus-sharing']) && $options['portfolio-google-plus-sharing'] == 1) {
-											echo "<a class='google-plus-share nectar-sharing-alt' href='#' title='".__('Share this', NECTAR_THEME_NAME)."'> <i class='icon-google-plus'></i> <span class='count'> ".GetGooglePlusShares(get_permalink($post->ID))." </span></a>";
+											echo "<a class='google-plus-share nectar-sharing-alt' href='#' title='".__('Share this', NECTAR_THEME_NAME)."'> <i class='fa fa-google-plus'></i> <span class='count'>0</span></a>";
 										}
 										
 										//linkedIn
 										if(!empty($options['portfolio-linkedin-sharing']) && $options['portfolio-linkedin-sharing'] == 1) {
-											echo "<a class='linkedin-share nectar-sharing' href='#' title='".__('Share this', NECTAR_THEME_NAME)."'> <i class='icon-linkedin'></i> <span class='count'> </span></a>";
+											echo "<a class='linkedin-share nectar-sharing' href='#' title='".__('Share this', NECTAR_THEME_NAME)."'> <i class='fa fa-linkedin'></i> <span class='count'> </span></a>";
 										}
 										//pinterest
 										if(!empty($options['portfolio-pinterest-sharing']) && $options['portfolio-pinterest-sharing'] == 1) {
-											echo "<a class='pinterest-share nectar-sharing' href='#' title='".__('Pin this', NECTAR_THEME_NAME)."'> <i class='icon-pinterest'></i> <span class='count'></span></a>";
+											echo "<a class='pinterest-share nectar-sharing' href='#' title='".__('Pin this', NECTAR_THEME_NAME)."'> <i class='fa fa-pinterest'></i> <span class='count'></span></a>";
 										}
 										
-										echo '</div>';
+										echo '</div></li>';
 
 									}
+
+									echo '<li><span class="n-shortcode">'.nectar_love('return').'</span></li>';
+									
+
+									if(!empty($options['portfolio_date']) && $options['portfolio_date'] == 1) {
+									   if( empty($options['portfolio_social']) || $options['portfolio_social'] == 0 || $project_social_style == 'fixed_bottom_right' ) { ?>
+
+											<li class="project-date">
+												<?php the_time('F d, Y'); ?>
+											</li>
+									   <?php } 
+								    
+										}
 									?>
-								
+								</ul><!--sharing-->
+
 								<div class="clear"></div>
 							</div><!--project-meta-->
 							
@@ -365,6 +268,7 @@ $full_width_portfolio = (!empty($fwp) && $fwp == 'enabled') ? 'id="full_width_po
 				
 			</div>
 
+
 			<?php if(comments_open() && $theme_skin == 'ascend') { ?>
 						
 				<div class="comments-section row">
@@ -372,11 +276,60 @@ $full_width_portfolio = (!empty($fwp) && $fwp == 'enabled') ? 'id="full_width_po
 				</div>
 			
 			<?php } ?>  
-			
+
 		</div><!--/container-->
+
+		<?php if($single_nav_pos == 'after_project' || $single_nav_pos == 'after_project_2') { 
+			echo '<div class="bottom_controls"> <div class="container">';  
+			project_single_controls();
+			echo '</div></div>';  
+		} ?>
+
 	
 	</div><!--/container-wrap-->
 
 </div><!--/if portfolio fullwidth-->
+
+
+<?php if($project_social_style == 'fixed_bottom_right') { ?>
+	<div class="nectar-social-sharing-fixed"> 
+
+		<?php
+			// portfolio social sharting icons
+			if( !empty($options['portfolio_social']) && $options['portfolio_social'] == 1) {
+				
+				echo '<a href="#"><i class="icon-default-style steadysets-icon-share"></i></a> <div class="nectar-social">';
+				
+				
+				//facebook
+				if(!empty($options['portfolio-facebook-sharing']) && $options['portfolio-facebook-sharing'] == 1) { 
+					echo "<a class='facebook-share nectar-sharing' href='#' title='".__('Share this', NECTAR_THEME_NAME)."'> <i class='fa fa-facebook'></i> </a>";
+				}
+				//twitter
+				if(!empty($options['portfolio-twitter-sharing']) && $options['portfolio-twitter-sharing'] == 1) {
+					echo "<a class='twitter-share nectar-sharing' href='#' title='".__('Tweet this', NECTAR_THEME_NAME)."'> <i class='fa fa-twitter'></i> </a>";
+				}
+				//google plus
+				if(!empty($options['portfolio-google-plus-sharing']) && $options['portfolio-google-plus-sharing'] == 1) {
+					echo "<a class='google-plus-share nectar-sharing-alt' href='#' title='".__('Share this', NECTAR_THEME_NAME)."'> <i class='fa fa-google-plus'></i> </a>";
+				}
+				
+				//linkedIn
+				if(!empty($options['portfolio-linkedin-sharing']) && $options['portfolio-linkedin-sharing'] == 1) {
+					echo "<a class='linkedin-share nectar-sharing' href='#' title='".__('Share this', NECTAR_THEME_NAME)."'> <i class='fa fa-linkedin'></i> </a>";
+				}
+				//pinterest
+				if(!empty($options['portfolio-pinterest-sharing']) && $options['portfolio-pinterest-sharing'] == 1) {
+					echo "<a class='pinterest-share nectar-sharing' href='#' title='".__('Pin this', NECTAR_THEME_NAME)."'> <i class='fa fa-pinterest'></i> </a>";
+				}
+				
+				echo '</div>';
+
+			}	
+			?>
+		</div><!--sharing-->
+
+	<?php } ?>
+
 	
 <?php get_footer(); ?>

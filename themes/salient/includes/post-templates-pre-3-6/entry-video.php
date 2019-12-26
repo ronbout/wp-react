@@ -6,7 +6,7 @@
 				
 			<div class="post-meta">
 				
-				<?php $options = get_option('salient'); 
+				<?php $options = get_nectar_theme_options(); 
 				$blog_type = $options['blog_type']; ?>
 				
 				<div class="date">
@@ -17,7 +17,7 @@
 					
 						<span class="month"><?php the_time('M'); ?></span>
 						<span class="day"><?php the_time('d'); ?></span>
-						<?php $options = get_option('salient'); 
+						<?php global $options; 
 						if(!empty($options['display_full_date']) && $options['display_full_date'] == 1) {
 							echo '<span class="year">'. get_the_time('Y') .'</span>';
 						}
@@ -40,7 +40,7 @@
 	            if( !empty( $video_embed ) ) {
 	                echo '<div class="video-wrap">' . stripslashes(htmlspecialchars_decode($video_embed)) . '</div>';
 	            } else { 
-	                nectar_video($post->ID); 
+	               //nectar_video($post->ID); 
 	            }
 	        ?>
 	        
@@ -77,7 +77,7 @@
 				the_content('<span class="continue-reading">'. __("Read More", NECTAR_THEME_NAME) . '</span>'); 
 			} ?>
 			
-			<?php $options = get_option('salient');
+			<?php global $options;
 				if( $options['display_tags'] == true ){
 					 
 					if( is_single() && has_tag() ) {
